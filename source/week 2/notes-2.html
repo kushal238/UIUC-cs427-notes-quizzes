@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Software Engineering Notes — Module 2</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600&family=Source+Sans+3:wght@400;500;600&family=Source+Code+Pro:wght@400;500&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #faf9f7;
+  --surface: #ffffff;
+  --surface2: #f4f3f0;
+  --border: #e8e6e1;
+  --border2: #d4d1ca;
+  --text: #1c1b18;
+  --text2: #4a4840;
+  --muted: #8a8780;
+  --accent: #3d6b4f;
+  --accent-light: #edf4ef;
+  --accent2: #7c5c2e;
+  --accent2-light: #fdf4e7;
+  --blue: #2d5fa6;
+  --blue-light: #ebf1fb;
+  --red-light: #fdf0ef;
+  --red: #a63d2d;
+  --tag-bg: #f0ede8;
+  --radius: 8px;
+}
+
+body {
+  font-family: 'Source Sans 3', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  padding: 36px 16px 60px;
+}
+
+.container { max-width: 780px; margin: 0 auto; }
+
+header { margin-bottom: 36px; }
+header h1 {
+  font-family: 'Lora', serif;
+  font-size: 1.55rem;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+.header-meta {
+  margin-top: 6px;
+  font-family: 'Source Code Pro', monospace;
+  font-size: 0.76rem;
+  color: var(--muted);
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.header-meta span {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 2px 8px;
+}
+
+.tab-nav {
+  display: flex;
+  gap: 2px;
+  border-bottom: 2px solid var(--border);
+  margin-bottom: 32px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.tab-nav::-webkit-scrollbar { display: none; }
+
+.tab-btn {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 0.83rem;
+  font-weight: 500;
+  padding: 9px 16px;
+  border: none;
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  white-space: nowrap;
+  transition: color 0.15s, border-color 0.15s;
+}
+.tab-btn.active { color: var(--text); border-bottom-color: var(--text); }
+.tab-btn:hover:not(.active) { color: var(--text2); }
+
+.tab-panel { display: none; }
+.tab-panel.active { display: block; animation: fadeIn 0.2s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px 26px;
+  margin-bottom: 16px;
+}
+.card:hover { border-color: var(--border2); }
+
+.card-label {
+  font-family: 'Source Code Pro', monospace;
+  font-size: 0.7rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+
+.card-title {
+  font-family: 'Lora', serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 14px;
+  line-height: 1.35;
+}
+
+.keywords {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+.kw {
+  font-family: 'Source Code Pro', monospace;
+  font-size: 0.76rem;
+  font-weight: 500;
+  background: var(--tag-bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 3px 9px;
+  color: var(--text2);
+}
+.kw.green { background: var(--accent-light); border-color: #b8d4c0; color: var(--accent); }
+.kw.blue { background: var(--blue-light); border-color: #b0c8e8; color: var(--blue); }
+.kw.amber { background: var(--accent2-light); border-color: #e0c898; color: var(--accent2); }
+.kw.red { background: var(--red-light); border-color: #e0b0a8; color: var(--red); }
+
+.card-body {
+  font-size: 0.9rem;
+  color: var(--text2);
+  line-height: 1.65;
+  margin-bottom: 14px;
+}
+.card-body:last-child { margin-bottom: 0; }
+
+.hl { color: var(--text); font-weight: 600; }
+.hl-green { color: var(--accent); font-weight: 600; }
+.hl-blue { color: var(--blue); font-weight: 600; }
+.hl-amber { color: var(--accent2); font-weight: 600; }
+.hl-red { color: var(--red); font-weight: 600; }
+
+.blist { list-style: none; display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+.blist:last-child { margin-bottom: 0; }
+.blist li {
+  font-size: 0.88rem;
+  color: var(--text2);
+  padding-left: 16px;
+  position: relative;
+  line-height: 1.6;
+}
+.blist li::before {
+  content: '—';
+  position: absolute;
+  left: 0;
+  color: var(--border2);
+  font-size: 0.75rem;
+  top: 3px;
+}
+
+.tbl-wrap { overflow-x: auto; margin-bottom: 14px; }
+.tbl-wrap:last-child { margin-bottom: 0; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.86rem;
+}
+th {
+  font-family: 'Source Code Pro', monospace;
+  font-size: 0.72rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  padding: 8px 12px;
+  border-bottom: 2px solid var(--border);
+  text-align: left;
+  background: var(--surface2);
+}
+td {
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text2);
+  line-height: 1.5;
+  vertical-align: top;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--surface2); }
+td:first-child { font-weight: 600; color: var(--text); }
+
+.divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
+
+.note-box {
+  background: var(--accent2-light);
+  border-left: 3px solid #d4a866;
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 12px 14px;
+  font-size: 0.86rem;
+  color: var(--text2);
+  line-height: 1.6;
+  margin-top: 14px;
+}
+.note-box .note-label {
+  font-family: 'Source Code Pro', monospace;
+  font-size: 0.7rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--accent2);
+  margin-bottom: 4px;
+}
+.green-box {
+  background: var(--accent-light);
+  border-left: 3px solid #7ab892;
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 12px 14px;
+  font-size: 0.86rem;
+  color: var(--text2);
+  line-height: 1.6;
+  margin-top: 14px;
+}
+.green-box .note-label { color: var(--accent); font-family: 'Source Code Pro', monospace; font-size: 0.7rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+.blue-box {
+  background: var(--blue-light);
+  border-left: 3px solid #7aaad6;
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 12px 14px;
+  font-size: 0.86rem;
+  color: var(--text2);
+  line-height: 1.6;
+  margin-top: 14px;
+}
+.blue-box .note-label { color: var(--blue); font-family: 'Source Code Pro', monospace; font-size: 0.7rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 10px;
+  margin-top: 4px;
+}
+.summary-cell {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 12px 14px;
+}
+.summary-cell .sc-label {
+  font-family: 'Source Code Pro', monospace;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+.summary-cell .sc-val {
+  font-size: 0.87rem;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.4;
+}
+
+/* Gantt / PERT diagrams */
+.diagram-wrap {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 14px;
+  overflow-x: auto;
+}
+.diagram-title {
+  font-family: 'Source Code Pro', monospace;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--muted);
+  margin-bottom: 14px;
+}
+
+/* Gantt styles */
+.gantt { width: 100%; border-collapse: collapse; min-width: 420px; }
+.gantt th {
+  font-family: 'Source Code Pro', monospace;
+  font-size: 0.68rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  font-weight: 500;
+  text-align: center;
+}
+.gantt th:first-child { text-align: left; width: 100px; }
+.gantt td {
+  padding: 5px 10px;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.82rem;
+  color: var(--text2);
+  height: 34px;
+  vertical-align: middle;
+}
+.gantt td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; font-size: 0.8rem; }
+.gantt tr:last-child td { border-bottom: none; }
+.gantt-cell { position: relative; }
+.bar {
+  display: block;
+  height: 14px;
+  border-radius: 3px;
+  background: var(--border2);
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+/* 5 days = 100%, each day = 20%
+   Task1: Day1~Day2   = 0%  ~ 40%  → left:0,    width:40%
+   Task2: Day1.5~Day3 = 10% ~ 60%  → left:10%,  width:50%
+   Task3: Day3~Day5   = 60% ~ 100% → left:60%,  width:40%
+   Task4: Day2~Day4   = 40% ~ 80%  → left:40%,  width:40% */
+.bar.t1 { left: 0;   width: 40%; background: #b8c8d8; }
+.bar.t2 { left: 10%; width: 50%; background: #b8c8d8; }
+.bar.t3 { left: 60%; width: 40%; background: #b8c8d8; }
+.bar.t4 { left: 40%; width: 40%; background: #b8c8d8; }
+
+/* Constraint annotation */
+.constraint-tag {
+  display: inline-block;
+  font-family: 'Source Code Pro', monospace;
+  font-size: 0.68rem;
+  padding: 2px 7px;
+  border-radius: 3px;
+  margin-left: 6px;
+  font-weight: 500;
+}
+.c-ss { background: var(--blue-light); color: var(--blue); border: 1px solid #b0c8e8; }
+.c-fs { background: var(--accent-light); color: var(--accent); border: 1px solid #b8d4c0; }
+.c-ff { background: var(--accent2-light); color: var(--accent2); border: 1px solid #e0c898; }
+
+/* PERT svg */
+.pert-container { display: flex; justify-content: center; }
+.pert-container svg { max-width: 100%; }
+
+/* Risk formula */
+.formula-box {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  margin-bottom: 14px;
+  text-align: center;
+}
+.formula {
+  font-family: 'Lora', serif;
+  font-size: 1.05rem;
+  color: var(--text);
+  font-style: italic;
+}
+.formula span { font-style: normal; color: var(--muted); font-size: 0.8rem; font-family: 'Source Code Pro', monospace; display: block; margin-top: 6px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>Software Engineering — 核心笔记</h1>
+    <div class="header-meta">
+      <span>Module 2</span>
+      <span>Development Models &amp; Project Management</span>
+      <span>Coursera</span>
+    </div>
+  </header>
+
+  <nav class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab('models', this)">开发模型</button>
+    <button class="tab-btn" onclick="switchTab('agile', this)">Agile / XP / Scrum</button>
+    <button class="tab-btn" onclick="switchTab('risk', this)">Risk Management</button>
+    <button class="tab-btn" onclick="switchTab('gantt', this)">Gantt Chart</button>
+    <button class="tab-btn" onclick="switchTab('pert', this)">PERT Chart</button>
+  </nav>
+
+  <!-- Tab 1: 开发模型 -->
+  <div id="tab-models" class="tab-panel active">
+
+    <div class="card">
+      <div class="card-label">对比总览</div>
+      <div class="card-title">软件开发模型概览</div>
+      <div class="keywords">
+        <span class="kw green">Waterfall</span>
+        <span class="kw green">Spiral</span>
+        <span class="kw green">Scrum</span>
+        <span class="kw blue">Plan-driven</span>
+        <span class="kw blue">Agile</span>
+        <span class="kw amber">RUP</span>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr><th>模型</th><th>适用场景</th><th>核心特点</th><th>不适用场景</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Waterfall</td>
+              <td>需求清晰、mission-critical（如航天、金融安全）、大型团队</td>
+              <td>线性顺序、阶段不可回头、文档驱动</td>
+              <td>需求频繁变化的项目</td>
+            </tr>
+            <tr>
+              <td>Spiral</td>
+              <td>风险高、需求不确定的大型项目</td>
+              <td>迭代 + 风险评估，每轮循环评估风险</td>
+              <td>小型、低风险项目（开销过大）</td>
+            </tr>
+            <tr>
+              <td>Scrum</td>
+              <td>需求可变、小型团队、非 mission-critical</td>
+              <td>Sprint 迭代、Daily Standup、Backlog 管理</td>
+              <td>高度监管或文档要求严格的项目</td>
+            </tr>
+            <tr>
+              <td>XP (Extreme Programming)</td>
+              <td>客户高度参与、需快速响应变化</td>
+              <td>Pair Programming、TDD、持续集成、客户全程参与</td>
+              <td>客户无法持续配合的项目</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="note-box">
+        <div class="note-label">Plan-driven vs. Agile 选择原则</div>
+        涉及火箭、医疗、金融等 <strong>mission/safety/financial-critical</strong> 系统 → 选 <strong>Plan-driven（Waterfall）</strong>；需求持续变化、小团队 → 选 <strong>Agile</strong>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">开发模型</div>
+      <div class="card-title">Waterfall Model — 适用与局限</div>
+      <div class="keywords">
+        <span class="kw green">Waterfall</span>
+        <span class="kw">Sequential</span>
+        <span class="kw blue">Mission-critical</span>
+        <span class="kw red">Changing Requirements</span>
+      </div>
+      <div class="card-body">Waterfall 是最经典的 <span class="hl">plan-driven</span> 开发模型，按线性顺序推进各阶段，阶段间不可倒回。</div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>条件</th><th>是否适合 Waterfall</th></tr></thead>
+          <tbody>
+            <tr><td>需求频繁变化 (Frequently changing requirements)</td><td style="color:var(--red); font-weight:600;">✗ 不适合 — 需求变化后难以回溯修改</td></tr>
+            <tr><td>Mission-critical 系统（航天、核安全等）</td><td style="color:var(--accent); font-weight:600;">✓ 适合 — 严格文档与流程保证安全性</td></tr>
+            <tr><td>Customer 目标明确清晰</td><td style="color:var(--accent); font-weight:600;">✓ 适合 — 需求稳定才能线性推进</td></tr>
+            <tr><td>大型开发团队</td><td style="color:var(--accent); font-weight:600;">✓ 适合 — 结构化流程便于大团队协调</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">开发模型</div>
+      <div class="card-title">Rational Unified Process (RUP) — 四阶段</div>
+      <div class="keywords">
+        <span class="kw amber">RUP</span>
+        <span class="kw">Inception</span>
+        <span class="kw">Elaboration</span>
+        <span class="kw">Construction</span>
+        <span class="kw">Transition</span>
+      </div>
+      <div class="card-body">RUP 是一种迭代式、以架构为核心的开发框架，分为四个阶段。</div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>阶段</th><th>核心活动</th><th>关键产出</th></tr></thead>
+          <tbody>
+            <tr><td>Inception（初始）</td><td>确定项目范围与可行性，明确功能特性 (Determining features)</td><td>业务用例、初步需求</td></tr>
+            <tr><td>Elaboration（细化）</td><td><span class="hl-amber">实现初始版本 (Implement initial version)</span>，细化架构</td><td>架构原型、精化用例</td></tr>
+            <tr><td>Construction（构建）</td><td>完善并持续改进，从初始版本迭代优化 (Implement further improvement)</td><td>可工作软件增量</td></tr>
+            <tr><td>Transition（交付）</td><td>测试、部署、用户培训 (Testing/using the software)</td><td>发布版本</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="note-box">
+        <div class="note-label">考点提示</div>
+        <strong>Elaboration 阶段 = Implement initial version（实现初始版本）</strong>，而非 Construction（继续改进）。两者极易混淆。
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Tab 2: Agile / XP / Scrum -->
+  <div id="tab-agile" class="tab-panel">
+
+    <div class="card">
+      <div class="card-label">敏捷方法</div>
+      <div class="card-title">Agile 方法论适用条件</div>
+      <div class="keywords">
+        <span class="kw green">Agile</span>
+        <span class="kw">Iterative</span>
+        <span class="kw">Customer Collaboration</span>
+        <span class="kw">Small Team</span>
+        <span class="kw">High Skill</span>
+      </div>
+      <div class="card-body">Agile 方法论适合特定项目条件，以下情况是<span class="hl-green">支持选择 Agile</span> 的理由：</div>
+      <ul class="blist">
+        <li>客户持续提出新需求 (customers anticipating new features)</li>
+        <li>小型团队（start-up 环境）</li>
+        <li>团队成员技能水平高（高技能工程师更能自组织）</li>
+      </ul>
+      <div class="note-box">
+        <div class="note-label">考点：不支持 Agile 的理由</div>
+        工程师们<strong>偏好有序文化 (ordered culture)</strong> → 这是偏好 Plan-driven 的信号，<strong>不是</strong>选择 Agile 的理由。
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">敏捷实践</div>
+      <div class="card-title">Extreme Programming (XP) — 核心实践</div>
+      <div class="keywords">
+        <span class="kw blue">XP</span>
+        <span class="kw">Pair Programming</span>
+        <span class="kw">TDD</span>
+        <span class="kw">Planning Game</span>
+        <span class="kw red">Sequential Design</span>
+      </div>
+      <div class="card-body">XP 是 Agile 中最激进的实践之一，强调工程技术纪律与客户持续参与。</div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>XP 实践</th><th>是否属于 XP</th><th>说明</th></tr></thead>
+          <tbody>
+            <tr><td>Test-driven Development (TDD)</td><td style="color:var(--accent); font-weight:600;">✓ 是</td><td>先写测试，再写实现代码</td></tr>
+            <tr><td>Planning Game</td><td style="color:var(--accent); font-weight:600;">✓ 是</td><td>客户与开发者共同规划迭代</td></tr>
+            <tr><td>Pair Programming</td><td style="color:var(--accent); font-weight:600;">✓ 是</td><td>两人共用一台机器协作开发</td></tr>
+            <tr><td>Sequential Design（顺序设计）</td><td style="color:var(--red); font-weight:600;">✗ 不是</td><td>这是 Waterfall 的做法，非 XP 实践</td></tr>
+            <tr><td>Comprehensive Documentation</td><td style="color:var(--red); font-weight:600;">✗ 不是</td><td>XP 强调可工作软件，不强调全面文档</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="green-box">
+        <div class="note-label">XP 核心优势</div>
+        客户<strong>全程深度参与 (closely engaged throughout)</strong>，而非仅在项目开始时参与——这是 XP 区别于其他模型的最大特点。
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">敏捷框架</div>
+      <div class="card-title">Scrum Process — 关键活动</div>
+      <div class="keywords">
+        <span class="kw green">Scrum</span>
+        <span class="kw">Sprint</span>
+        <span class="kw">Daily Scrum Meeting</span>
+        <span class="kw">Product Backlog</span>
+        <span class="kw">Product Increment</span>
+        <span class="kw red">Quarterly Reflection</span>
+      </div>
+      <div class="card-body">Scrum 通过固定节奏的 Sprint 迭代交付软件增量，包含特定的仪式与工件。</div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Scrum 活动</th><th>是否属于 Scrum</th></tr></thead>
+          <tbody>
+            <tr><td>Daily Scrum Meeting（每日站会）</td><td style="color:var(--accent); font-weight:600;">✓ 属于</td></tr>
+            <tr><td>Prioritizing Product-Backlog Tasks（Backlog 优先级排序）</td><td style="color:var(--accent); font-weight:600;">✓ 属于</td></tr>
+            <tr><td>Delivering Product Increment After a Sprint（Sprint 后交付增量）</td><td style="color:var(--accent); font-weight:600;">✓ 属于</td></tr>
+            <tr><td>Quarterly Team Reflection（季度团队复盘）</td><td style="color:var(--red); font-weight:600;">✗ 不属于 — Scrum 的回顾 (Retrospective) 在每个 Sprint 结束时进行，非季度</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">效率对比</div>
+      <div class="card-title">Parallel vs. Pair Programming — 成本对比</div>
+      <div class="keywords">
+        <span class="kw blue">Parallel Development</span>
+        <span class="kw amber">Pair Programming</span>
+        <span class="kw">Man-hours</span>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>方式</th><th>人力</th><th>时间</th><th>总 Man-hours</th><th>结论</th></tr></thead>
+          <tbody>
+            <tr><td>两人<strong>并行</strong>开发两个组件</td><td>2人</td><td>各做各的，更短</td><td style="color:var(--accent); font-weight:600;">较少 ✓</td><td>效率更高</td></tr>
+            <tr><td>两人<strong>结对编程</strong>顺序开发</td><td>2人同时在一个任务</td><td>顺序完成，更长</td><td style="color:var(--red); font-weight:600;">较多 ✗</td><td>Man-hours 更高</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="note-box">
+        <div class="note-label">理解要点</div>
+        Pair Programming 在<strong>代码质量、知识共享、错误发现</strong>上有优势，但在同等任务量下，<strong>并行开发消耗的 man-hours 更少</strong>——两者目标不同，场景不同。
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Tab 3: Risk Management -->
+  <div id="tab-risk" class="tab-panel">
+
+    <div class="card">
+      <div class="card-label">风险管理</div>
+      <div class="card-title">Software Development Risk — 风险识别</div>
+      <div class="keywords">
+        <span class="kw red">Risk</span>
+        <span class="kw">Late Delivery</span>
+        <span class="kw">Wrong Requirements</span>
+        <span class="kw">Team Dissolution</span>
+      </div>
+      <div class="card-body">软件开发中的<span class="hl-red">风险 (Risk)</span> 是指可能导致项目失败或损失的不确定事件，涵盖多个维度。</div>
+      <div class="summary-grid">
+        <div class="summary-cell">
+          <div class="sc-label">Schedule Risk</div>
+          <div class="sc-val">晚交付 (Late delivery)</div>
+        </div>
+        <div class="summary-cell">
+          <div class="sc-label">Requirements Risk</div>
+          <div class="sc-val">需求错误 (Wrong feature requirement)</div>
+        </div>
+        <div class="summary-cell">
+          <div class="sc-label">People Risk</div>
+          <div class="sc-val">团队解散 (Team dissolution)</div>
+        </div>
+      </div>
+      <div class="green-box">
+        <div class="note-label">考点</div>
+        以上三者 <strong>全都属于</strong>软件开发风险 → 选 "All of above"。风险不限于技术层面，人员与需求同样是风险来源。
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">风险量化</div>
+      <div class="card-title">Risk Exposure（风险暴露值）</div>
+      <div class="keywords">
+        <span class="kw red">Risk Exposure</span>
+        <span class="kw">Probability</span>
+        <span class="kw">Loss</span>
+      </div>
+      <div class="formula-box">
+        <div class="formula">Risk Exposure = Probability × Loss</div>
+        <span>风险暴露值 = 风险发生概率 × 潜在损失金额</span>
+      </div>
+      <div class="card-body">示例：Jane 的硬盘价值 $50,000，故障概率 2%</div>
+      <div class="blue-box">
+        <div class="note-label">计算</div>
+        Risk Exposure = 2% × $50,000 = <strong>$1,000</strong>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">风险应对</div>
+      <div class="card-title">Risk Mitigation Strategies — 四种策略</div>
+      <div class="keywords">
+        <span class="kw">Risk Avoidance</span>
+        <span class="kw green">Risk Protection</span>
+        <span class="kw amber">Risk Acceptance</span>
+        <span class="kw blue">Risk Monitoring</span>
+        <span class="kw">Risk Transfer</span>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>策略</th><th>含义</th><th>示例</th></tr></thead>
+          <tbody>
+            <tr><td>Risk Avoidance（规避）</td><td>消除风险来源，不做该活动</td><td>不使用某不稳定的第三方库</td></tr>
+            <tr><td>Risk Protection（保护）</td><td>采取行动降低风险影响或概率</td><td><span class="hl-green">购买异地备份方案</span>（Jane 的案例）</td></tr>
+            <tr><td>Risk Acceptance（接受）</td><td>承认风险存在，不采取措施</td><td>接受小概率低损失风险</td></tr>
+            <tr><td>Risk Monitoring（监控）</td><td>持续跟踪风险指标，触发时再响应</td><td>定期检查服务器健康状态</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="note-box">
+        <div class="note-label">考点：Jane 备份的策略类型</div>
+        购买<strong>异地备份计划 (off-site backup plan)</strong> = <strong>Risk Protection</strong>，因为她采取了主动行动来降低数据丢失的影响，而非规避、接受或仅监控风险。
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Tab 4: Gantt Chart -->
+  <div id="tab-gantt" class="tab-panel">
+
+    <div class="card">
+      <div class="card-label">项目计划工具</div>
+      <div class="card-title">Gantt Chart — 任务依赖约束</div>
+      <div class="keywords">
+        <span class="kw blue">Gantt Chart</span>
+        <span class="kw green">Start-to-Start</span>
+        <span class="kw green">Finish-to-Start</span>
+        <span class="kw amber">Finish-to-Finish</span>
+      </div>
+      <div class="card-body">Gantt Chart 用横条表示任务时间跨度，任务间的依赖关系通过<span class="hl">时序约束 (constraints)</span> 体现。</div>
+
+      <div class="diagram-wrap">
+        <div class="diagram-title">Quiz 题目 Gantt Chart（重现）</div>
+        <table class="gantt">
+          <thead>
+            <tr>
+              <th>Task Name</th>
+              <th>Day 1</th>
+              <th>Day 2</th>
+              <th>Day 3</th>
+              <th>Day 4</th>
+              <th>Day 5</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Task 1</td>
+              <td class="gantt-cell" colspan="5" style="position:relative;">
+                <span class="bar t1"></span>
+              </td>
+            </tr>
+            <tr>
+              <td>Task 2</td>
+              <td class="gantt-cell" colspan="5" style="position:relative;">
+                <span class="bar t2"></span>
+              </td>
+            </tr>
+            <tr>
+              <td>Task 3</td>
+              <td class="gantt-cell" colspan="5" style="position:relative;">
+                <span class="bar t3"></span>
+              </td>
+            </tr>
+            <tr>
+              <td>Task 4</td>
+              <td class="gantt-cell" colspan="5" style="position:relative;">
+                <span class="bar t4"></span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>约束关系</th><th>含义</th><th>判断方式</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>Start-to-Start (SS)</td>
+              <td>A 开始后 B 才能开始</td>
+              <td>两任务的<strong>起点对齐或 B 晚于 A 开始</strong></td>
+            </tr>
+            <tr>
+              <td>Finish-to-Start (FS)</td>
+              <td>A 结束后 B 才能开始</td>
+              <td>A 的末端 ≈ B 的起点（最常见）</td>
+            </tr>
+            <tr>
+              <td>Finish-to-Finish (FF)</td>
+              <td>A 结束后 B 才能结束</td>
+              <td>两任务的<strong>终点对齐或 B 晚于 A 结束</strong></td>
+            </tr>
+            <tr>
+              <td>Start-to-Finish (SF)</td>
+              <td>A 开始后 B 才能结束</td>
+              <td>较罕见，很少在考试出现</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card-body" style="margin-top:14px;">根据题目 Gantt Chart 分析各任务对关系：</div>
+      <ul class="blist">
+        <li><strong>Task 1 &amp; Task 2</strong>：Task 1 开始后，Task 2 随即开始 → <span class="constraint-tag c-ss">Start-to-Start</span></li>
+        <li><strong>Task 2 &amp; Task 3</strong>：Task 2 结束后，Task 3 开始 → <span class="constraint-tag c-fs">Finish-to-Start</span></li>
+        <li><strong>Task 3 &amp; Task 4</strong>：Task 3 与 Task 4 同时结束 → <span class="constraint-tag c-ff">Finish-to-Finish</span></li>
+        <li><strong>Task 1 &amp; Task 4</strong>（错误答案分析）：Task 1 结束 ≠ Task 4 开始，此处并非 Finish-to-Start → <span style="color:var(--red); font-weight:600;">✗ 错误描述</span></li>
+      </ul>
+      <div class="note-box">
+        <div class="note-label">考点</div>
+        Q8 的正确答案（即<strong>错误陈述</strong>）是：Task 1 与 Task 4 满足 Finish-to-Start — 这是<strong>不正确</strong>的，Task 4 在 Task 1 结束前就已开始。
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Tab 5: PERT Chart -->
+  <div id="tab-pert" class="tab-panel">
+
+    <div class="card">
+      <div class="card-label">项目计划工具</div>
+      <div class="card-title">PERT Chart — 关键路径分析</div>
+      <div class="keywords">
+        <span class="kw blue">PERT Chart</span>
+        <span class="kw red">Critical Path</span>
+        <span class="kw">Directed Acyclic Graph</span>
+        <span class="kw">Slack Time</span>
+        <span class="kw">Event</span>
+      </div>
+      <div class="card-body">PERT（Program Evaluation and Review Technique）用<span class="hl-blue">有向无环图 (DAG)</span> 表示任务依赖关系，箭头上的数字表示<span class="hl">持续时间（duration）</span>，而非重要性或数据流。</div>
+
+      <div class="diagram-wrap">
+        <div class="diagram-title">Quiz 题目 PERT Chart（重现）</div>
+        <div class="pert-container">
+          <svg viewBox="0 0 520 180" xmlns="http://www.w3.org/2000/svg" width="520" height="180">
+            <defs>
+              <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                <path d="M0,0 L0,6 L8,3 z" fill="#8a8780"/>
+              </marker>
+              <marker id="arrow-red" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                <path d="M0,0 L0,6 L8,3 z" fill="#a63d2d"/>
+              </marker>
+            </defs>
+            <!-- Nodes -->
+            <ellipse cx="60" cy="90" rx="42" ry="28" fill="white" stroke="#d4d1ca" stroke-width="1.5"/>
+            <text x="60" y="95" text-anchor="middle" font-family="Source Sans 3, sans-serif" font-size="14" font-weight="600" fill="#1c1b18">A</text>
+
+            <ellipse cx="210" cy="90" rx="42" ry="28" fill="white" stroke="#d4d1ca" stroke-width="1.5"/>
+            <text x="210" y="95" text-anchor="middle" font-family="Source Sans 3, sans-serif" font-size="14" font-weight="600" fill="#1c1b18">B</text>
+
+            <ellipse cx="340" cy="42" rx="36" ry="24" fill="white" stroke="#d4d1ca" stroke-width="1.5"/>
+            <text x="340" y="47" text-anchor="middle" font-family="Source Sans 3, sans-serif" font-size="14" font-weight="600" fill="#1c1b18">C</text>
+
+            <ellipse cx="340" cy="138" rx="36" ry="24" fill="white" stroke="#a63d2d" stroke-width="2"/>
+            <text x="340" y="143" text-anchor="middle" font-family="Source Sans 3, sans-serif" font-size="14" font-weight="600" fill="#a63d2d">D</text>
+
+            <ellipse cx="470" cy="90" rx="36" ry="24" fill="white" stroke="#d4d1ca" stroke-width="1.5"/>
+            <text x="470" y="95" text-anchor="middle" font-family="Source Sans 3, sans-serif" font-size="14" font-weight="600" fill="#1c1b18">E</text>
+
+            <!-- Edges: A->B (critical) -->
+            <line x1="102" y1="90" x2="164" y2="90" stroke="#a63d2d" stroke-width="2" marker-end="url(#arrow-red)"/>
+            <text x="133" y="83" text-anchor="middle" font-family="Source Code Pro, monospace" font-size="12" fill="#a63d2d" font-weight="600">6</text>
+
+            <!-- B->C -->
+            <line x1="238" y1="72" x2="308" y2="52" stroke="#8a8780" stroke-width="1.5" marker-end="url(#arrow)"/>
+            <text x="268" y="56" text-anchor="middle" font-family="Source Code Pro, monospace" font-size="12" fill="#8a8780">3</text>
+
+            <!-- B->D (critical) -->
+            <line x1="238" y1="108" x2="308" y2="128" stroke="#a63d2d" stroke-width="2" marker-end="url(#arrow-red)"/>
+            <text x="268" y="130" text-anchor="middle" font-family="Source Code Pro, monospace" font-size="12" fill="#a63d2d" font-weight="600">10</text>
+
+            <!-- C->E -->
+            <line x1="374" y1="52" x2="438" y2="74" stroke="#8a8780" stroke-width="1.5" marker-end="url(#arrow)"/>
+            <text x="413" y="60" text-anchor="middle" font-family="Source Code Pro, monospace" font-size="12" fill="#8a8780">7</text>
+
+            <!-- D->E (critical) -->
+            <line x1="374" y1="128" x2="438" y2="106" stroke="#a63d2d" stroke-width="2" marker-end="url(#arrow-red)"/>
+            <text x="413" y="126" text-anchor="middle" font-family="Source Code Pro, monospace" font-size="12" fill="#a63d2d" font-weight="600">5</text>
+
+            <!-- Legend -->
+            <line x1="20" y1="165" x2="45" y2="165" stroke="#a63d2d" stroke-width="2" marker-end="url(#arrow-red)"/>
+            <text x="52" y="169" font-family="Source Sans 3, sans-serif" font-size="10" fill="#a63d2d">Critical Path</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="card-body">计算各路径总时长，找出<span class="hl-red">最长路径 = Critical Path</span>：</div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>路径</th><th>计算</th><th>总时长</th><th>是否为 Critical Path</th></tr></thead>
+          <tbody>
+            <tr><td>A → B → C → E</td><td>6 + 3 + 7</td><td>16</td><td style="color:var(--muted);">否</td></tr>
+            <tr><td>A → B → D → E</td><td>6 + 10 + 5</td><td style="color:var(--red); font-weight:700;">21</td><td style="color:var(--red); font-weight:600;">✓ 是，最长路径</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <hr class="divider">
+      <div class="card-label" style="margin-bottom:10px;">PERT Chart 核心知识点</div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>陈述</th><th>正确性</th></tr></thead>
+          <tbody>
+            <tr><td>箭头边代表两事件间的<strong>数据流 (data flow)</strong></td><td style="color:var(--red);">✗ 错误 — 箭头代表依赖关系与任务，不是数据流</td></tr>
+            <tr><td>箭头上的标签表示该事件的<strong>重要性 (importance)</strong></td><td style="color:var(--red);">✗ 错误 — 标签表示<strong>持续时间 (duration)</strong></td></tr>
+            <tr><td>PERT 图是<strong>有向无环图 (Directed Acyclic Graph, DAG)</strong></td><td style="color:var(--accent); font-weight:600;">✓ 正确 — 任务不能循环依赖，必须无环</td></tr>
+            <tr><td>Critical Path 上的事件有 <strong>slack time（松弛时间）</strong></td><td style="color:var(--red);">✗ 错误 — Critical Path 上的节点 slack = 0，有 slack 的是非关键路径</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="note-box">
+        <div class="note-label">Slack Time 概念</div>
+        <strong>Slack Time</strong> = 某任务可以延迟而不影响项目总工期的时间。<strong>Critical Path 上的所有任务 slack = 0</strong>——任何延迟都会推迟整个项目。
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+</script>
+</body>
+</html>

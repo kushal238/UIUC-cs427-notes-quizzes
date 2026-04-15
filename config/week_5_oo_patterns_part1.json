@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$comment": "Week 5 UML / OO foundation (notes-5 + quiz-5). Merge page: week_5_oo_patterns_part_1.html",
+  "moduleId": "week_5",
+  "mergePageFilename": "week_5_oo_patterns_part_1.html",
+  "titles": {
+    "documentTitle": "Week 5 · OO Paterns Part 1 & Quiz",
+    "notesH1": "Week 5 - OO Paterns - Part 1",
+    "quizH2": "Week 5 - quiz"
+  },
+  "subtitles": {
+    "notesHeaderMeta": false,
+    "quizTagline": false
+  },
+  "assets": {
+    "mindmapIframeSrc": "mindmap/week_5_oo_patterns_part_1_mindmap.html",
+    "quizDiagrams": {
+      "q2": "assets/week5-quiz-q2.png",
+      "q5": "assets/week5-quiz-q5.png"
+    }
+  },
+  "notesSourceFiles": {
+    "description": "Optional: original split files for reference only",
+    "notes": "source/notes-5.html",
+    "quiz": "source/quiz-5.html"
+  },
+  "notesTabs": [
+    { "id": "mindmap", "label": "导图", "defaultActive": true },
+    { "id": "relationships", "label": "关系类型" },
+    { "id": "multiplicity", "label": "Multiplicity" },
+    { "id": "classdiagram", "label": "Class Diagram" },
+    { "id": "sequence", "label": "Sequence Diagram" },
+    { "id": "oo", "label": "OO 建模" },
+    { "id": "tips", "label": "考点" }
+  ],
+  "quiz": {
+    "questionCount": 13,
+    "sourceTabLabel": "题目",
+    "toolbarOrder": ["sourceTab", "spacer", "reset", "score"],
+    "comment": "reset 必须在 score 左侧；DOM: .qz-actions 内 [Reset][Score]"
+  },
+  "uiRules": {
+    "blocksNoBorder": true,
+    "cardsNoCardLabel": true,
+    "noteLabelInCalloutsAllowed": true
+  }
+}

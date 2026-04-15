@@ -1,0 +1,252 @@
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.qz-wrap{padding:1.5rem 0;font-family:var(--font-sans)}
+.qz-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem}
+.qz-title{font-size:18px;font-weight:500;color:var(--color-text-primary)}
+.qz-meta{font-size:13px;color:var(--color-text-secondary)}
+button.reset-btn{font-size:13px;padding:6px 14px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:transparent;color:var(--color-text-secondary);cursor:pointer}
+button.reset-btn:hover{background:var(--color-background-secondary)}
+.qz-score{font-size:13px;font-weight:500;color:var(--color-text-primary);margin-left:12px}
+.q-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1rem 1.25rem;margin-bottom:1rem}
+.q-num{font-size:12px;color:var(--color-text-tertiary);margin-bottom:4px}
+.q-text{font-size:14px;color:var(--color-text-primary);line-height:1.5;margin-bottom:12px}
+.opt{display:flex;align-items:flex-start;gap:10px;padding:8px 10px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-tertiary);margin-bottom:6px;cursor:pointer;transition:background 0.15s}
+.opt:hover:not(.locked){background:var(--color-background-secondary)}
+.opt-marker{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--color-border-secondary);flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500}
+.opt-text{font-size:13px;color:var(--color-text-primary);line-height:1.4}
+.opt.correct{background:#eaf3de;border-color:#639922}
+.opt.correct .opt-marker{background:#639922;border-color:#639922;color:#fff}
+.opt.correct .opt-text{color:#3B6D11}
+.opt.wrong{background:#fcebeb;border-color:#E24B4A}
+.opt.wrong .opt-marker{background:#E24B4A;border-color:#E24B4A;color:#fff}
+.opt.wrong .opt-text{color:#A32D2D}
+.opt.highlight{background:#eaf3de;border-color:#639922}
+.opt.highlight .opt-marker{border-color:#639922}
+.opt.highlight .opt-text{color:#3B6D11;font-weight:500}
+.explanation{display:none;margin-top:10px;background:#f7f7f5;border-radius:var(--border-radius-md);padding:10px 12px;font-size:13px;color:var(--color-text-secondary);line-height:1.5;border:0.5px solid var(--color-border-tertiary)}
+.explanation.show{display:block}
+.exp-label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:0.04em;color:var(--color-text-tertiary);margin-bottom:4px}
+@media(prefers-color-scheme:dark){
+.opt.correct{background:#1a2e10;border-color:#639922}
+.opt.correct .opt-text{color:#C0DD97}
+.opt.wrong{background:#2e1010;border-color:#E24B4A}
+.opt.wrong .opt-text{color:#F7C1C1}
+.opt.highlight{background:#1a2e10;border-color:#639922}
+.opt.highlight .opt-text{color:#C0DD97}
+.explanation{background:var(--color-background-secondary)}
+}
+</style>
+<h2 class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">Week 7 Software Testing Quiz — 15 multiple choice questions</h2>
+<div class="qz-wrap">
+  <div class="qz-header">
+    <div>
+      <div class="qz-title">Week 7 — Software Testing</div>
+      <div class="qz-meta">15 questions</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <span class="qz-score" id="score-label"></span>
+      <button class="reset-btn" onclick="resetAll()">Reset</button>
+    </div>
+  </div>
+  <div id="quiz-container"></div>
+</div>
+<script>
+const questions = [
+  {
+    q: "Which of the following is NOT a purpose of testing?",
+    opts: ["To improve code quality","To spot code faults","To document code","To guarantee code is fully correct"],
+    ans: 3,
+    exp: "Testing can improve quality, find faults, and serve as documentation — but it cannot guarantee code is fully correct. No finite test suite can cover all possible inputs and states."
+  },
+  {
+    q: "Which of the following do NOT belong to the types of test activities?",
+    opts: ["Test Design","Test Automation","Test Implementation","Test Evaluation"],
+    ans: 2,
+    exp: "The main test activity types are Test Design, Test Automation, Test Execution, and Test Evaluation. 'Test Implementation' is not a standard category — implementation details are part of Test Automation."
+  },
+  {
+    q: "Which of the following test activities embeds test values into executable scripts?",
+    opts: ["Test Design","Test Automation","Test Implementation","Test Execution"],
+    ans: 1,
+    exp: "Test Automation is the activity that takes test values and embeds them into executable scripts so they can be run automatically. Test Design creates the test cases, and Test Execution runs them."
+  },
+  {
+    q: "Which of the following statements about testing activities is correct?",
+    opts: [
+      "Designing tests requires relatively little knowledge about the domain and programs.",
+      "In order to embed test values into executable scripts, one needs to understand the theory very well.",
+      "It is always efficient to assign the same person for all testing activities.",
+      "Test automation is useful to have but could also be boring to construct."
+    ],
+    ans: 3,
+    exp: "Test automation is genuinely useful (especially for regression testing) but the work of scripting and maintaining automated tests can be repetitive and tedious. The other options are incorrect: test design requires deep domain knowledge, scripting doesn't demand heavy theory, and splitting roles is often more efficient."
+  },
+  {
+    q: "Which of the following statements about test cases is correct?",
+    opts: [
+      "Test cases cannot be used as documents as they are considered as two very different categories.",
+      "Only developers can construct test cases for their programs.",
+      "The process of developing test cases can also help developers to understand the requirements."
+    ],
+    ans: 2,
+    exp: "Writing test cases forces developers to think through requirements carefully, which deepens understanding. Test cases can also serve as living documentation. Many people beyond developers (QA engineers, stakeholders) can and should write tests."
+  },
+  {
+    q: "When should we write test cases?",
+    opts: ["Before code is written","While writing code","After code is written","All of above"],
+    ans: 3,
+    exp: "Tests can be written at any stage. Before (TDD/BDD), during (as features are added), or after (regression tests, bug fixes). Each timing has its own advantages, and all are valid in practice."
+  },
+  {
+    q: "Which statement about manual testing and automated testing is NOT correct?",
+    opts: [
+      "When regression tests are conducted very often, we should prefer doing automated testing.",
+      "To test a Graphics Interface, we should build automated tests after the interface design is stable.",
+      "Tests that don't require re-execution should be done manually.",
+      "Automated tests always find more bugs than manual tests."
+    ],
+    ans: 3,
+    exp: "Automated tests do not always find more bugs. Exploratory manual testing can uncover issues that rigid automated scripts miss. Automation excels at repetitive regression testing, not at creative bug discovery."
+  },
+  {
+    q: "Which of the following statements is true about tests?",
+    opts: [
+      "Tests must be written in the form of code",
+      "User interfaces cannot be tested",
+      "Projects can have more test code than source code",
+      "Tests can always spot bugs"
+    ],
+    ans: 2,
+    exp: "It is entirely normal — especially in well-tested projects — for the test codebase to exceed the production codebase in size. Tests are not limited to code form (manual tests exist), UIs can be tested, and tests cannot guarantee finding all bugs."
+  },
+  {
+    q: "Which of the following statements about writing tests as a developer is NOT correct?",
+    opts: [
+      "Developers cannot always detect all faults even if they fully understand their implementations.",
+      "More people are encouraged to engage in writing tests in addition to developers.",
+      "When developers construct test suites, they may have a bias on software code or functions.",
+      "Only QA developers should develop test cases since they are experts in testing area."
+    ],
+    ans: 3,
+    exp: "It is not true that only QA developers should write tests. Developers, domain experts, and even end users can contribute valuable test cases. Broader involvement leads to better coverage and reduces blind spots."
+  },
+  {
+    q: "Which of the following is true about Black-box testing?",
+    opts: [
+      "It is not feasible to thoroughly exercise all potential test inputs.",
+      "Tests are written with knowledge of the internal workings to thoroughly test what is happening on the inside of the code.",
+      "Black-box testing is good at finding faults of extra logic.",
+      "Black-box testing is better for finding crashes, out of bounds failures, and file not closed failures."
+    ],
+    ans: 0,
+    exp: "The input space is effectively infinite for most programs, making exhaustive black-box testing infeasible. The second option describes white-box testing. Black-box testing is actually weak at finding extra logic faults (since you can't see the internals), and white-box testing is generally better for low-level faults like out-of-bounds errors."
+  },
+  {
+    q: "Which of the following statements about White-box testing is NOT correct?",
+    opts: [
+      "Methods like Equivalence Class and Boundary Value Analysis can also be applied in White-box testing.",
+      "Maintaining White-box test scripts could be very difficult if implementation details keep changing frequently.",
+      "White-box testing is usually very simple, so it does not require knowledge of programming and implementation."
+    ],
+    ans: 2,
+    exp: "White-box testing requires detailed knowledge of the internal code structure, logic, and implementation. It is not simple — testers must understand control flow, data flow, and program internals to design effective structural tests."
+  },
+  {
+    q: "A developer called Math.log(5) which was supposed to return the natural logarithm of the input, but returns 125 instead. This is an example of:",
+    opts: ["Error","Failure","Fault"],
+    ans: 0,
+    exp: "An Error is a human mistake in the code — here the developer wrote incorrect logic (perhaps computing 5³ instead of ln(5)). A Fault is the defect in the code itself. A Failure is the observable incorrect behavior at runtime. According to the PIE model, the incorrect source action is the Error."
+  },
+  {
+    q: "According to the PIE model, which of the following conditions is NOT correct for a failure to be observed?",
+    opts: [
+      "The location or locations in the program that contain the fault must be reached.",
+      "The state of the program must be incorrect.",
+      "The infected state must NOT propagate to cause some output of the program to be incorrect."
+    ],
+    ans: 2,
+    exp: "The PIE model requires: (1) the faulty location is Executed, (2) the state becomes Infected (incorrect), and (3) the infected state Propagates to an observable output. The third option states the opposite — propagation IS required for a failure to be observed."
+  },
+  {
+    q: "Which of the following is NOT a metric for code coverage?",
+    opts: ["Method coverage","Branch coverage","Statement coverage","Parameter coverage"],
+    ans: 3,
+    exp: "Standard code coverage metrics include Statement, Branch, Method/Function, Line, and Condition coverage. 'Parameter coverage' is not a recognized standard coverage metric — parameters are not independently tracked as an execution structure."
+  },
+  {
+    q: "\"Dividing input conditions into groups and testing each group of inputs\" describes which technique for Black-box testing?",
+    opts: ["Boundary Value Analysis","Equivalence Class Partitioning","Decision Table Testing","Use case testing"],
+    ans: 1,
+    exp: "Equivalence Class Partitioning divides inputs into classes where all members are expected to behave the same way, then tests one representative from each class. Boundary Value Analysis focuses specifically on the edges between classes, not the partitioning itself."
+  }
+];
+
+let answered = new Array(questions.length).fill(false);
+let correct = 0;
+
+function render(){
+  const c = document.getElementById('quiz-container');
+  c.innerHTML = '';
+  questions.forEach((q,i)=>{
+    const card = document.createElement('div');
+    card.className = 'q-card';
+    card.innerHTML = `<div class="q-num">Question ${i+1} of ${questions.length}</div><div class="q-text">${q.q}</div>`;
+    const optsDiv = document.createElement('div');
+    q.opts.forEach((o,j)=>{
+      const opt = document.createElement('div');
+      opt.className = 'opt';
+      opt.dataset.qi = i;
+      opt.dataset.oi = j;
+      opt.innerHTML = `<div class="opt-marker">${String.fromCharCode(65+j)}</div><div class="opt-text">${o}</div>`;
+      if(!answered[i]) opt.onclick = choose;
+      optsDiv.appendChild(opt);
+    });
+    card.appendChild(optsDiv);
+    const exp = document.createElement('div');
+    exp.className = 'explanation';
+    exp.id = `exp-${i}`;
+    exp.innerHTML = `<div class="exp-label">Explanation</div>${q.exp}`;
+    card.appendChild(exp);
+    c.appendChild(card);
+  });
+  updateScore();
+}
+
+function choose(e){
+  const opt = e.currentTarget;
+  const qi = parseInt(opt.dataset.qi);
+  const oi = parseInt(opt.dataset.oi);
+  if(answered[qi]) return;
+  answered[qi] = true;
+  const card = opt.closest('.q-card');
+  const allOpts = card.querySelectorAll('.opt');
+  allOpts.forEach(o=>{
+    o.classList.add('locked');
+    o.style.cursor='default';
+  });
+  if(oi === questions[qi].ans){
+    opt.classList.add('correct');
+    correct++;
+  } else {
+    opt.classList.add('wrong');
+    allOpts[questions[qi].ans].classList.add('highlight');
+  }
+  document.getElementById(`exp-${qi}`).classList.add('show');
+  updateScore();
+}
+
+function updateScore(){
+  const done = answered.filter(Boolean).length;
+  const lbl = document.getElementById('score-label');
+  if(done===0){lbl.textContent='';return;}
+  lbl.textContent = `${correct}/${done} correct`;
+}
+
+function resetAll(){
+  answered = new Array(questions.length).fill(false);
+  correct = 0;
+  render();
+}
+
+render();
+</script>

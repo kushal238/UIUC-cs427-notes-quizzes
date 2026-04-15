@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Software Engineering Notes</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600&family=Source+Sans+3:wght@400;500;600&family=Source+Code+Pro:wght@400;500&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #faf9f7;
+  --surface: #ffffff;
+  --surface2: #f4f3f0;
+  --border: #e8e6e1;
+  --border2: #d4d1ca;
+  --text: #1c1b18;
+  --text2: #4a4840;
+  --muted: #8a8780;
+  --accent: #3d6b4f;
+  --accent-light: #edf4ef;
+  --accent2: #7c5c2e;
+  --accent2-light: #fdf4e7;
+  --blue: #2d5fa6;
+  --blue-light: #ebf1fb;
+  --red-light: #fdf0ef;
+  --red: #a63d2d;
+  --tag-bg: #f0ede8;
+  --radius: 8px;
+}
+
+body {
+  font-family: 'Source Sans 3', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  padding: 36px 16px 60px;
+}
+
+.container { max-width: 780px; margin: 0 auto; }
+
+/* Header */
+header { margin-bottom: 36px; }
+header h1 {
+  font-family: 'Lora', serif;
+  font-size: 1.55rem;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+.header-meta {
+  margin-top: 6px;
+  font-family: 'Source Code Pro', monospace;
+  font-size: 0.76rem;
+  color: var(--muted);
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.header-meta span {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 2px 8px;
+}
+
+/* Tab nav */
+.tab-nav {
+  display: flex;
+  gap: 2px;
+  border-bottom: 2px solid var(--border);
+  margin-bottom: 32px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.tab-nav::-webkit-scrollbar { display: none; }
+
+.tab-btn {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 0.83rem;
+  font-weight: 500;
+  padding: 9px 16px;
+  border: none;
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  white-space: nowrap;
+  transition: color 0.15s, border-color 0.15s;
+}
+.tab-btn.active { color: var(--text); border-bottom-color: var(--text); }
+.tab-btn:hover:not(.active) { color: var(--text2); }
+
+.tab-panel { display: none; }
+.tab-panel.active { display: block; animation: fadeIn 0.2s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Card */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px 26px;
+  margin-bottom: 16px;
+}
+.card:hover { border-color: var(--border2); }
+
+.card-label {
+  font-family: 'Source Code Pro', monospace;
+  font-size: 0.7rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+
+.card-title {
+  font-family: 'Lora', serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 14px;
+  line-height: 1.35;
+}
+
+/* Keywords */
+.keywords {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+.kw {
+  font-family: 'Source Code Pro', monospace;
+  font-size: 0.76rem;
+  font-weight: 500;
+  background: var(--tag-bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 3px 9px;
+  color: var(--text2);
+}
+.kw.green { background: var(--accent-light); border-color: #b8d4c0; color: var(--accent); }
+.kw.blue { background: var(--blue-light); border-color: #b0c8e8; color: var(--blue); }
+.kw.amber { background: var(--accent2-light); border-color: #e0c898; color: var(--accent2); }
+
+/* Body text */
+.card-body {
+  font-size: 0.9rem;
+  color: var(--text2);
+  line-height: 1.65;
+  margin-bottom: 14px;
+}
+.card-body:last-child { margin-bottom: 0; }
+
+/* Highlight */
+.hl { color: var(--text); font-weight: 600; }
+.hl-green { color: var(--accent); font-weight: 600; }
+.hl-blue { color: var(--blue); font-weight: 600; }
+.hl-amber { color: var(--accent2); font-weight: 600; }
+
+/* Bullet list */
+.blist { list-style: none; display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+.blist:last-child { margin-bottom: 0; }
+.blist li {
+  font-size: 0.88rem;
+  color: var(--text2);
+  padding-left: 16px;
+  position: relative;
+  line-height: 1.6;
+}
+.blist li::before {
+  content: '—';
+  position: absolute;
+  left: 0;
+  color: var(--border2);
+  font-size: 0.75rem;
+  top: 3px;
+}
+
+/* Table */
+.tbl-wrap { overflow-x: auto; margin-bottom: 14px; }
+.tbl-wrap:last-child { margin-bottom: 0; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.86rem;
+}
+th {
+  font-family: 'Source Code Pro', monospace;
+  font-size: 0.72rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  padding: 8px 12px;
+  border-bottom: 2px solid var(--border);
+  text-align: left;
+  background: var(--surface2);
+}
+td {
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text2);
+  line-height: 1.5;
+  vertical-align: top;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--surface2); }
+td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+
+/* Divider */
+.divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
+
+/* Note box */
+.note-box {
+  background: var(--accent2-light);
+  border-left: 3px solid #d4a866;
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 12px 14px;
+  font-size: 0.86rem;
+  color: var(--text2);
+  line-height: 1.6;
+  margin-top: 14px;
+}
+.note-box .note-label {
+  font-family: 'Source Code Pro', monospace;
+  font-size: 0.7rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--accent2);
+  margin-bottom: 4px;
+}
+
+.green-box {
+  background: var(--accent-light);
+  border-left: 3px solid #7ab892;
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 12px 14px;
+  font-size: 0.86rem;
+  color: var(--text2);
+  line-height: 1.6;
+  margin-top: 14px;
+}
+.green-box .note-label { color: var(--accent); font-family: 'Source Code Pro', monospace; font-size: 0.7rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+
+.blue-box {
+  background: var(--blue-light);
+  border-left: 3px solid #7aaad6;
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 12px 14px;
+  font-size: 0.86rem;
+  color: var(--text2);
+  line-height: 1.6;
+  margin-top: 14px;
+}
+.blue-box .note-label { color: var(--blue); font-family: 'Source Code Pro', monospace; font-size: 0.7rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+
+/* Summary card */
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+  margin-top: 4px;
+}
+.summary-cell {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 12px 14px;
+}
+.summary-cell .sc-label {
+  font-family: 'Source Code Pro', monospace;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+.summary-cell .sc-val {
+  font-size: 0.87rem;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.4;
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>Software Engineering — 核心笔记</h1>
+    <div class="header-meta">
+      <span>Module 1</span>
+      <span>Software Engineering Fundamentals</span>
+      <span>Coursera</span>
+    </div>
+  </header>
+
+  <nav class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab('sdlc', this)">SDLC</button>
+    <button class="tab-btn" onclick="switchTab('trinity', this)">Trinity</button>
+    <button class="tab-btn" onclick="switchTab('concepts', this)">核心概念</button>
+    <button class="tab-btn" onclick="switchTab('stakeholders', this)">Stakeholders</button>
+    <button class="tab-btn" onclick="switchTab('se', this)">SE vs. 编程</button>
+    <button class="tab-btn" onclick="switchTab('goals', this)">Competing Goals</button>
+  </nav>
+
+  <!-- Tab 1: SDLC -->
+  <div id="tab-sdlc" class="tab-panel active">
+
+    <div class="card">
+      <div class="card-label">概念</div>
+      <div class="card-title">Software Development Life Cycle (SDLC)</div>
+      <div class="keywords">
+        <span class="kw green">SDLC</span>
+        <span class="kw">Requirements</span>
+        <span class="kw">Design</span>
+        <span class="kw">Implementation</span>
+        <span class="kw">Testing</span>
+        <span class="kw">Maintenance</span>
+      </div>
+      <div class="card-body">
+        SDLC 是软件从无到有、从发布到维护的完整生命周期框架，定义了开发过程中每个阶段的任务与目标。
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr><th>阶段</th><th>核心任务</th><th>产出物</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Requirements Phase</td><td>收集、分析用户需求</td><td>需求规格说明书 (SRS)</td></tr>
+            <tr><td>Design Phase</td><td>规划架构、模块、接口</td><td>设计文档、UML 图</td></tr>
+            <tr><td>Implementation Phase</td><td>编码开发</td><td>源代码</td></tr>
+            <tr><td>Testing Phase</td><td>验证功能与质量</td><td>测试报告</td></tr>
+            <tr><td>Maintenance Phase</td><td>修复 bug、迭代更新</td><td>补丁、新版本</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="note-box">
+        <div class="note-label">考点提示</div>
+        <strong>Evaluation Phase 不属于 SDLC 标准阶段。</strong> 常见干扰项，注意区分。
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Tab 2: Trinity -->
+  <div id="tab-trinity" class="tab-panel">
+
+    <div class="card">
+      <div class="card-label">概念</div>
+      <div class="card-title">The Trinity of Software Project（软件项目三元组）</div>
+      <div class="keywords">
+        <span class="kw green">Software System</span>
+        <span class="kw green">Software Users</span>
+        <span class="kw green">Software Development Process</span>
+        <span class="kw">Trinity</span>
+      </div>
+      <div class="card-body">
+        软件项目由三个核心要素构成，缺少任一要素都不完整。三者相互依存、共同决定项目成败。
+      </div>
+      <div class="summary-grid">
+        <div class="summary-cell">
+          <div class="sc-label">Software System</div>
+          <div class="sc-val">最终交付的软件产品本身</div>
+        </div>
+        <div class="summary-cell">
+          <div class="sc-label">Software Users</div>
+          <div class="sc-val">使用该系统的人群</div>
+        </div>
+        <div class="summary-cell">
+          <div class="sc-label">Software Dev. Process</div>
+          <div class="sc-val">构建软件所用的方法与流程</div>
+        </div>
+      </div>
+      <div class="note-box">
+        <div class="note-label">考点提示</div>
+        <strong>Software Design 不在三元组内。</strong> Design 是开发过程中的一个阶段，而非独立的三元组成员。
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Tab 3: 核心概念 -->
+  <div id="tab-concepts" class="tab-panel">
+
+    <div class="card">
+      <div class="card-label">设计原则</div>
+      <div class="card-title">Information Hiding（信息隐藏）</div>
+      <div class="keywords">
+        <span class="kw blue">Information Hiding</span>
+        <span class="kw">Encapsulation</span>
+        <span class="kw">Interface</span>
+        <span class="kw">Modularity</span>
+      </div>
+      <div class="card-body">
+        将组件的<span class="hl">内部实现细节</span>隐藏起来，只对外暴露<span class="hl-blue">接口 (Interface)</span>。当内部设计变更时，外部调用方代码无需修改。
+      </div>
+      <ul class="blist">
+        <li>修改内部逻辑 → 外部代码不受影响</li>
+        <li>提升模块独立性，降低耦合度 (coupling)</li>
+        <li>是 OOP 中 Encapsulation（封装）的核心思想</li>
+      </ul>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>概念</th><th>重点</th></tr></thead>
+          <tbody>
+            <tr><td>Information Hiding</td><td>隐藏内部决策，对外只暴露接口</td></tr>
+            <tr><td>Divide and Conquer</td><td>把大问题拆分成小问题分别解决</td></tr>
+            <tr><td>Inheritance</td><td>子类复用父类属性与方法（OOP 机制）</td></tr>
+            <tr><td>Project Management</td><td>计划、组织、控制项目执行</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">软件特性</div>
+      <div class="card-title">Software 的核心特征：Malleable（可塑性）</div>
+      <div class="keywords">
+        <span class="kw green">Malleable</span>
+        <span class="kw">Complex</span>
+        <span class="kw">Evolving</span>
+        <span class="kw">Team-based</span>
+      </div>
+      <div class="card-body">
+        软件最显著的特征是<span class="hl-green">高度可塑性 (Malleable)</span>——可以被轻易修改、扩展、重构，这是与硬件最大的不同。
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>特征</th><th>说明</th><th>正确？</th></tr></thead>
+          <tbody>
+            <tr><td>Malleable</td><td>易于修改与调整</td><td style="color:var(--accent); font-weight:600;">✓ 正确</td></tr>
+            <tr><td>Simple</td><td>现实中软件高度复杂</td><td style="color:var(--red); font-weight:600;">✗ 错误</td></tr>
+            <tr><td>Constant</td><td>软件持续演进，非恒定不变</td><td style="color:var(--red); font-weight:600;">✗ 错误</td></tr>
+            <tr><td>Single-person</td><td>现实软件通常需要团队协作</td><td style="color:var(--red); font-weight:600;">✗ 错误</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">管理原则</div>
+      <div class="card-title">Brooks' Law — 增人不增速</div>
+      <div class="keywords">
+        <span class="kw amber">Brooks' Law</span>
+        <span class="kw">Software Crisis</span>
+        <span class="kw">Communication Overhead</span>
+        <span class="kw">Onboarding</span>
+      </div>
+      <div class="card-body">
+        <span class="hl-amber">"Adding manpower to a late software project makes it later."</span> — Fred Brooks，《The Mythical Man-Month》
+      </div>
+      <ul class="blist">
+        <li>新成员需要<strong>上手时间 (onboarding)</strong>，短期内不产出</li>
+        <li>人员增加 → 沟通路径指数级增长 → <strong>communication overhead</strong> 急剧上升</li>
+        <li>老成员被迫分心辅导新人 → 整体效率下降</li>
+      </ul>
+      <div class="note-box">
+        <div class="note-label">一句话总结</div>
+        增加团队人数不能解决 Software Crisis，反而可能使情况更糟。
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Tab 4: Stakeholders -->
+  <div id="tab-stakeholders" class="tab-panel">
+
+    <div class="card">
+      <div class="card-label">项目角色</div>
+      <div class="card-title">Project Stakeholders（项目利益相关方）</div>
+      <div class="keywords">
+        <span class="kw blue">Stakeholder</span>
+        <span class="kw">Customer</span>
+        <span class="kw">User</span>
+        <span class="kw">Developer</span>
+        <span class="kw">Tester</span>
+        <span class="kw">Designer</span>
+      </div>
+      <div class="card-body">
+        所有对软件项目有利益关联或影响的人，统称为 <span class="hl-blue">Stakeholders</span>。范围远比"开发者"更广。
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>角色</th><th>描述</th></tr></thead>
+          <tbody>
+            <tr><td>Customer</td><td>付费购买/委托开发软件的人或组织</td></tr>
+            <tr><td>User</td><td>实际使用软件的人（可与 Customer 不同）</td></tr>
+            <tr><td>Designer</td><td>负责系统架构与界面设计</td></tr>
+            <tr><td>Tester</td><td>验证软件质量与功能正确性</td></tr>
+            <tr><td>Support Engineer</td><td>负责部署、运维与用户支持</td></tr>
+            <tr><td>Project Manager</td><td>协调资源、进度与风险</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <hr class="divider">
+      <div class="card-label" style="margin-bottom:10px;">重要区分</div>
+      <div class="card-body">
+        <span class="hl">Users ≠ Customers</span>
+      </div>
+      <ul class="blist">
+        <li><strong>Customer</strong>：出钱的人，如企业采购方</li>
+        <li><strong>User</strong>：用软件的人，如企业员工</li>
+        <li>两者可以是同一人，也可以完全不同（常见于 B2B 场景）</li>
+      </ul>
+      <div class="blue-box">
+        <div class="note-label">例子</div>
+        公司 IT 部门购买了一款 CRM 软件（Customer = IT 部门），实际使用的是销售团队（Users = 销售人员）。
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Tab 5: SE vs 编程 -->
+  <div id="tab-se" class="tab-panel">
+
+    <div class="card">
+      <div class="card-label">概念辨析</div>
+      <div class="card-title">Software Engineering vs. Programming</div>
+      <div class="keywords">
+        <span class="kw green">Software Engineering</span>
+        <span class="kw">Programming</span>
+        <span class="kw">Multi-person</span>
+        <span class="kw">Multi-version</span>
+        <span class="kw">Long-lived Systems</span>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th></th><th>Programming（编程）</th><th>Software Engineering（软件工程）</th></tr></thead>
+          <tbody>
+            <tr><td>规模</td><td>个人或小脚本</td><td>Multi-person 团队协作</td></tr>
+            <tr><td>版本</td><td>通常单一版本</td><td>Multi-version，持续演进</td></tr>
+            <tr><td>寿命</td><td>短期、临时</td><td>长期维护（Long-lived）</td></tr>
+            <tr><td>关注点</td><td>让代码跑起来</td><td>流程、设计、质量、协作</td></tr>
+            <tr><td>产出</td><td>可运行程序</td><td>可维护的软件系统</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul class="blist">
+        <li>SE 包含编程，但远不止编程——还涉及需求、设计、测试、维护等全流程</li>
+        <li>SE 的核心挑战是在<strong>多人协作、长期演进</strong>的背景下保持质量与一致性</li>
+        <li>SE 关注 "how to build software well at scale"，而不仅仅是 "how to write code"</li>
+      </ul>
+      <div class="green-box">
+        <div class="note-label">软件工程师的关键属性</div>
+        除了技术能力，还需具备 <strong>ability to efficiently/effectively interact and work in a team</strong>——团队协作能力是软件工程师区别于单纯程序员的核心素质。
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Tab 6: Competing Goals -->
+  <div id="tab-goals" class="tab-panel">
+
+    <div class="card">
+      <div class="card-label">项目管理</div>
+      <div class="card-title">Competing Goals of Software Project（竞争性目标）</div>
+      <div class="keywords">
+        <span class="kw amber">Time</span>
+        <span class="kw amber">Cost</span>
+        <span class="kw amber">Quality</span>
+        <span class="kw">Iron Triangle</span>
+        <span class="kw">Trade-off</span>
+      </div>
+      <div class="card-body">
+        软件项目的三大竞争性目标相互制约，通常无法同时最优——即项目管理中的 <span class="hl-amber">"Iron Triangle"</span>（铁三角）。
+      </div>
+      <div class="summary-grid">
+        <div class="summary-cell">
+          <div class="sc-label">Time（时间）</div>
+          <div class="sc-val">开发者用于开发的时间与项目周期</div>
+        </div>
+        <div class="summary-cell">
+          <div class="sc-label">Cost（成本）</div>
+          <div class="sc-val">客户支付给团队的开发费用</div>
+        </div>
+        <div class="summary-cell">
+          <div class="sc-label">Quality（质量）</div>
+          <div class="sc-val">软件的功能完整性与可靠性</div>
+        </div>
+      </div>
+      <ul class="blist" style="margin-top:16px;">
+        <li>想要<strong>更快</strong>交付 → 需要增加成本 或 降低质量</li>
+        <li>想要<strong>更便宜</strong> → 需要延长时间 或 降低质量</li>
+        <li>想要<strong>更高质量</strong> → 需要更多时间 或 更高成本</li>
+      </ul>
+      <hr class="divider">
+      <div class="card-body"><span class="hl">不属于</span>竞争性目标的选项：</div>
+      <div class="note-box">
+        <div class="note-label">考点提示</div>
+        <strong>Market share（市场占有率）</strong>是业务/商业指标，<strong>不属于</strong>软件项目的 competing goals。Time、Cost、Quality 才是三大核心竞争目标。
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+</script>
+</body>
+</html>

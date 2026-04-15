@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 5 Notes — UML</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600&family=Source+Sans+3:wght@400;500;600&family=Source+Code+Pro:wght@400;500&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #faf9f7;
+  --surface: #ffffff;
+  --surface2: #f4f3f0;
+  --border: #e8e6e1;
+  --border2: #d4d1ca;
+  --text: #1c1b18;
+  --text2: #4a4840;
+  --muted: #8a8780;
+  --accent: #3d6b4f;
+  --accent-light: #edf4ef;
+  --accent2: #7c5c2e;
+  --accent2-light: #fdf4e7;
+  --blue: #2d5fa6;
+  --blue-light: #ebf1fb;
+  --red: #a63d2d;
+  --red-light: #fdf0ef;
+  --tag-bg: #f0ede8;
+  --radius: 8px;
+}
+
+body {
+  font-family: 'Source Sans 3', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  padding: 36px 16px 60px;
+}
+
+.container { max-width: 780px; margin: 0 auto; }
+
+header { margin-bottom: 36px; }
+header h1 {
+  font-family: 'Lora', serif;
+  font-size: 1.55rem;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+.header-meta {
+  margin-top: 6px;
+  font-family: 'Source Code Pro', monospace;
+  font-size: 0.76rem;
+  color: var(--muted);
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.header-meta span {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 2px 8px;
+}
+
+/* Tab nav */
+.tab-nav {
+  display: flex;
+  gap: 2px;
+  border-bottom: 2px solid var(--border);
+  margin-bottom: 32px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.tab-nav::-webkit-scrollbar { display: none; }
+
+.tab-btn {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 0.83rem;
+  font-weight: 500;
+  padding: 9px 16px;
+  border: none;
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  white-space: nowrap;
+  transition: color 0.15s, border-color 0.15s;
+}
+.tab-btn.active { color: var(--text); border-bottom-color: var(--text); }
+.tab-btn:hover:not(.active) { color: var(--text2); }
+
+.tab-panel { display: none; }
+.tab-panel.active { display: block; animation: fadeIn 0.2s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Card */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px 26px;
+  margin-bottom: 16px;
+}
+.card:hover { border-color: var(--border2); }
+
+.card-label {
+  font-family: 'Source Code Pro', monospace;
+  font-size: 0.7rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+
+.card-title {
+  font-family: 'Lora', serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 14px;
+  line-height: 1.35;
+}
+
+/* Keywords */
+.keywords {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+.kw {
+  font-family: 'Source Code Pro', monospace;
+  font-size: 0.76rem;
+  font-weight: 500;
+  background: var(--tag-bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 3px 9px;
+  color: var(--text2);
+}
+.kw.green { background: var(--accent-light); border-color: #b8d4c0; color: var(--accent); }
+.kw.blue  { background: var(--blue-light);   border-color: #b0c8e8; color: var(--blue); }
+.kw.amber { background: var(--accent2-light); border-color: #e0c898; color: var(--accent2); }
+.kw.red   { background: var(--red-light);    border-color: #e8b8b0; color: var(--red); }
+
+/* Body text */
+.card-body {
+  font-size: 0.9rem;
+  color: var(--text2);
+  line-height: 1.65;
+  margin-bottom: 14px;
+}
+.card-body:last-child { margin-bottom: 0; }
+
+.hl       { color: var(--text);   font-weight: 600; }
+.hl-green { color: var(--accent); font-weight: 600; }
+.hl-blue  { color: var(--blue);   font-weight: 600; }
+.hl-amber { color: var(--accent2);font-weight: 600; }
+.hl-red   { color: var(--red);    font-weight: 600; }
+
+/* Bullet list */
+.blist { list-style: none; display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+.blist:last-child { margin-bottom: 0; }
+.blist li {
+  font-size: 0.88rem;
+  color: var(--text2);
+  padding-left: 16px;
+  position: relative;
+  line-height: 1.6;
+}
+.blist li::before {
+  content: '—';
+  position: absolute;
+  left: 0;
+  color: var(--border2);
+  font-size: 0.75rem;
+  top: 3px;
+}
+
+/* Table */
+.tbl-wrap { overflow-x: auto; margin-bottom: 14px; }
+.tbl-wrap:last-child { margin-bottom: 0; }
+table { width: 100%; border-collapse: collapse; font-size: 0.86rem; }
+th {
+  font-family: 'Source Code Pro', monospace;
+  font-size: 0.72rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  padding: 8px 12px;
+  border-bottom: 2px solid var(--border);
+  text-align: left;
+  background: var(--surface2);
+}
+td {
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text2);
+  line-height: 1.5;
+  vertical-align: top;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--surface2); }
+td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+
+/* Divider */
+.divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
+
+/* Note boxes */
+.note-box {
+  background: var(--accent2-light);
+  border-left: 3px solid #d4a866;
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 12px 14px;
+  font-size: 0.86rem;
+  color: var(--text2);
+  line-height: 1.6;
+  margin-top: 14px;
+}
+.note-box .note-label {
+  font-family: 'Source Code Pro', monospace;
+  font-size: 0.7rem; font-weight: 500;
+  text-transform: uppercase; letter-spacing: 0.06em;
+  color: var(--accent2); margin-bottom: 4px;
+}
+.green-box {
+  background: var(--accent-light);
+  border-left: 3px solid #7ab892;
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 12px 14px;
+  font-size: 0.86rem; color: var(--text2); line-height: 1.6; margin-top: 14px;
+}
+.green-box .note-label { color: var(--accent); font-family: 'Source Code Pro', monospace; font-size: 0.7rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+.blue-box {
+  background: var(--blue-light);
+  border-left: 3px solid #7aaad6;
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 12px 14px;
+  font-size: 0.86rem; color: var(--text2); line-height: 1.6; margin-top: 14px;
+}
+.blue-box .note-label { color: var(--blue); font-family: 'Source Code Pro', monospace; font-size: 0.7rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+.red-box {
+  background: var(--red-light);
+  border-left: 3px solid #e8a090;
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 12px 14px;
+  font-size: 0.86rem; color: var(--text2); line-height: 1.6; margin-top: 14px;
+}
+.red-box .note-label { color: var(--red); font-family: 'Source Code Pro', monospace; font-size: 0.7rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+
+/* Summary grid */
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 10px;
+  margin-top: 4px;
+}
+.summary-cell {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 12px 14px;
+}
+.summary-cell .sc-label {
+  font-family: 'Source Code Pro', monospace;
+  font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.07em;
+  color: var(--muted); margin-bottom: 4px;
+}
+.summary-cell .sc-val { font-size: 0.87rem; font-weight: 600; color: var(--text); line-height: 1.4; }
+
+/* Diamond visual */
+.diamond-row {
+  display: flex;
+  gap: 24px;
+  margin: 14px 0;
+  flex-wrap: wrap;
+}
+.diamond-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 200px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 12px 14px;
+}
+.diamond-sym {
+  font-size: 1.4rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.diamond-info .di-label {
+  font-family: 'Source Code Pro', monospace;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  margin-bottom: 2px;
+}
+.diamond-info .di-val { font-size: 0.88rem; font-weight: 600; color: var(--text); }
+.diamond-info .di-desc { font-size: 0.82rem; color: var(--text2); margin-top: 2px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>Software Engineering — 核心笔记</h1>
+    <div class="header-meta">
+      <span>Week 5</span>
+      <span>UML Class Diagrams &amp; Sequence Diagrams</span>
+      <span>Coursera</span>
+    </div>
+  </header>
+
+  <nav class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab('relationships', this)">关系类型</button>
+    <button class="tab-btn" onclick="switchTab('multiplicity', this)">Multiplicity</button>
+    <button class="tab-btn" onclick="switchTab('classdiagram', this)">Class Diagram</button>
+    <button class="tab-btn" onclick="switchTab('sequence', this)">Sequence Diagram</button>
+    <button class="tab-btn" onclick="switchTab('oo', this)">OO 建模</button>
+  </nav>
+
+  <!-- ===== Tab 1: 关系类型 ===== -->
+  <div id="tab-relationships" class="tab-panel active">
+
+    <div class="card">
+      <div class="card-label">总览</div>
+      <div class="card-title">UML 四大关系类型</div>
+      <div class="keywords">
+        <span class="kw green">Generalization</span>
+        <span class="kw blue">Association</span>
+        <span class="kw amber">Aggregation</span>
+        <span class="kw red">Composition</span>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>关系</th><th>中文</th><th>符号</th><th>含义</th><th>强度</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>Generalization</td>
+              <td>泛化 / 继承</td>
+              <td>空心三角箭头 △→</td>
+              <td>子类 <strong>is-a</strong> 父类；继承属性与方法</td>
+              <td>—</td>
+            </tr>
+            <tr>
+              <td>Association</td>
+              <td>关联</td>
+              <td>普通实线 ——</td>
+              <td>两个类之间存在某种关系，最通用的连接</td>
+              <td>弱</td>
+            </tr>
+            <tr>
+              <td>Aggregation</td>
+              <td>聚合</td>
+              <td>空心菱形 ◇——</td>
+              <td>part-whole；部分<strong>可以</strong>脱离整体独立存在</td>
+              <td>中</td>
+            </tr>
+            <tr>
+              <td>Composition</td>
+              <td>组合</td>
+              <td>实心菱形 ◆——</td>
+              <td>part-whole；部分<strong>不能</strong>脱离整体存在</td>
+              <td>强</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="note-box">
+        <div class="note-label">菱形位置规则</div>
+        菱形永远画在<strong>整体（whole）</strong>那一侧，箭头（若有）指向部分。
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">重点辨析</div>
+      <div class="card-title">Aggregation vs. Composition — 核心区别</div>
+      <div class="keywords">
+        <span class="kw amber">Aggregation ◇</span>
+        <span class="kw red">Composition ◆</span>
+        <span class="kw">Part-Whole</span>
+        <span class="kw">Lifecycle</span>
+      </div>
+      <div class="diamond-row">
+        <div class="diamond-item">
+          <div class="diamond-sym" style="color:#8a8780;">◇</div>
+          <div class="diamond-info">
+            <div class="di-label">Aggregation 聚合</div>
+            <div class="di-val">空心菱形</div>
+            <div class="di-desc">部分可独立存在<br>生命周期各自独立</div>
+          </div>
+        </div>
+        <div class="diamond-item">
+          <div class="diamond-sym" style="color:#1c1b18;">◆</div>
+          <div class="diamond-info">
+            <div class="di-label">Composition 组合</div>
+            <div class="di-val">实心菱形</div>
+            <div class="di-desc">部分不能脱离整体<br>整体销毁则部分也消失</div>
+          </div>
+        </div>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>例子</th><th>整体</th><th>部分</th><th>类型</th><th>原因</th></tr></thead>
+          <tbody>
+            <tr><td>大学 &amp; 系</td><td>University</td><td>Department</td><td>Composition ◆</td><td>没有大学，系就不存在</td></tr>
+            <tr><td>班级 &amp; 学生</td><td>Class</td><td>Student</td><td>Aggregation ◇</td><td>班级解散，学生依然存在</td></tr>
+            <tr><td>Queue &amp; Array</td><td>Queue</td><td>Array</td><td>Composition ◆</td><td>Array 是 Queue 内部实现，随 Queue 销毁</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">特殊情况</div>
+      <div class="card-title">Generalization — 继承与抽象类</div>
+      <div class="keywords">
+        <span class="kw green">Generalization</span>
+        <span class="kw">Abstract Class</span>
+        <span class="kw">Concrete Class</span>
+        <span class="kw">Italics</span>
+        <span class="kw">is-a</span>
+      </div>
+      <div class="card-body">
+        继承箭头从<span class="hl-green">子类</span>指向<span class="hl-green">父类</span>（空心三角），表示"子类 is-a 父类"。
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th></th><th>Abstract Class</th><th>Concrete Class</th></tr></thead>
+          <tbody>
+            <tr><td>能否实例化</td><td>❌ 不能 new</td><td>✅ 可以 new</td></tr>
+            <tr><td>方法实现</td><td>可包含未实现的抽象方法</td><td>所有方法必须有实现</td></tr>
+            <tr><td>UML 表示</td><td>类名用<em>斜体 (italics)</em></td><td>类名正常字体</td></tr>
+            <tr><td>用途</td><td>定义共同"模板"供子类继承</td><td>直接创建对象使用</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="blue-box">
+        <div class="note-label">例子</div>
+        <code>Publication</code>（斜体）是抽象类 → 不能直接创建"一个出版物"；<code>Article</code>、<code>Book</code> 是具体类，可以直接实例化。
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===== Tab 2: Multiplicity ===== -->
+  <div id="tab-multiplicity" class="tab-panel">
+
+    <div class="card">
+      <div class="card-label">核心概念</div>
+      <div class="card-title">Multiplicity（多重性）— 读法规则</div>
+      <div class="keywords">
+        <span class="kw blue">Multiplicity</span>
+        <span class="kw">0..1</span>
+        <span class="kw">1..*</span>
+        <span class="kw">0..*</span>
+        <span class="kw">1..4</span>
+      </div>
+      <div class="card-body">
+        多重性数字写在连线的<span class="hl">对面</span>——数字写在 A 侧，表示的是<span class="hl-blue">一个 B 对应多少个 A</span>。
+      </div>
+      <div class="green-box">
+        <div class="note-label">读法口诀</div>
+        <strong>看哪边的数字 → 就在约束那边的数量</strong><br>
+        即：数字在 A 侧 = "从 B 的角度看，B 拥有多少个 A"
+      </div>
+      <hr class="divider">
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>符号</th><th>含义</th><th>例子</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>恰好 1 个（默认值，可省略不写）</td><td>每个 City 恰好在 1 个 State</td></tr>
+            <tr><td>0..1</td><td>零个或一个（可选）</td><td>员工可以有 0 或 1 个直属上司</td></tr>
+            <tr><td>0..*</td><td>零个或多个（无限制）</td><td>Author 可以没有任何 Book</td></tr>
+            <tr><td>1..*</td><td>至少一个</td><td>Order 至少包含 1 个商品</td></tr>
+            <tr><td>1..4</td><td>1 到 4 个</td><td>每篇 Article 有 1~4 个 Author</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">实战解读</div>
+      <div class="card-title">Quiz 图例解析</div>
+      <div class="keywords">
+        <span class="kw">Article</span>
+        <span class="kw">Author</span>
+        <span class="kw">Book</span>
+        <span class="kw green">Publication</span>
+      </div>
+      <div class="card-body">连线两端的多重性需要分别独立解读：</div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>连线</th><th>数字位置</th><th>解读</th></tr></thead>
+          <tbody>
+            <tr><td>Article ↔ Author</td><td>Author 侧：1..4</td><td>每篇 Article 需要 1~4 个 Author</td></tr>
+            <tr><td>Article ↔ Author</td><td>Article 侧：0..*</td><td>一个 Author 可以写 0 到多篇 Article</td></tr>
+            <tr><td>Book ↔ Author</td><td>Author 侧：0..*</td><td>每本 Book 可以有 0 到多个 Author</td></tr>
+            <tr><td>Book ↔ Author</td><td>Book 侧：0..*</td><td>一个 Author 可以写 0 到多本 Book</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="note-box">
+        <div class="note-label">关键推论</div>
+        Author 侧是 <code>0..*</code> → "An author may have written nothing" ✅ 是正确的。<br>
+        Book 侧是 <code>0..*</code> → "Not every Book has an Author" ✅ 也是正确的。<br>
+        因此 "Every publication has an Author" ❌ 是错误陈述。
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===== Tab 3: Class Diagram ===== -->
+  <div id="tab-classdiagram" class="tab-panel">
+
+    <div class="card">
+      <div class="card-label">Class Diagram 基础</div>
+      <div class="card-title">类图的结构与用途</div>
+      <div class="keywords">
+        <span class="kw green">Class Diagram</span>
+        <span class="kw">Attribute</span>
+        <span class="kw">Operation</span>
+        <span class="kw">Static Structure</span>
+      </div>
+      <div class="card-body">
+        Class Diagram 是 UML 中描述系统<span class="hl">静态结构</span>的图——展示类、属性、方法及类之间的关系。
+      </div>
+      <div class="summary-grid">
+        <div class="summary-cell">
+          <div class="sc-label">Class（类）</div>
+          <div class="sc-val">系统中的实体或概念，用矩形框表示</div>
+        </div>
+        <div class="summary-cell">
+          <div class="sc-label">Attribute（属性）</div>
+          <div class="sc-val">类的数据特征，如 name、age</div>
+        </div>
+        <div class="summary-cell">
+          <div class="sc-label">Operation（操作）</div>
+          <div class="sc-val">类的行为/方法，如 order()、calculate()</div>
+        </div>
+      </div>
+      <div class="red-box">
+        <div class="note-label">Class Diagram 的局限</div>
+        类图只能表示<strong>静态结构</strong>，<strong>不能</strong>表示：
+        <ul class="blist" style="margin-top:6px;">
+          <li>算法逻辑（algorithmic nature）</li>
+          <li>时序 / 时间信息（timing-related information）</li>
+          <li>对象间的交互过程</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">建模实践</div>
+      <div class="card-title">识别 Class vs. Attribute vs. Operation</div>
+      <div class="keywords">
+        <span class="kw blue">Class</span>
+        <span class="kw amber">Attribute</span>
+        <span class="kw green">Operation</span>
+      </div>
+      <div class="card-body">从需求描述中提取建模元素的判断方法：</div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>元素类型</th><th>特征</th><th>识别方式</th></tr></thead>
+          <tbody>
+            <tr><td>Class</td><td>持久化的实体/概念</td><td>名词，可被实例化，有自己的属性</td></tr>
+            <tr><td>Attribute</td><td>描述类的数据特征</td><td>名词，从属于某个类，描述"它是什么"</td></tr>
+            <tr><td>Operation</td><td>类的行为或动作</td><td>动词，描述"它能做什么"</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="blue-box">
+        <div class="note-label">Pizza 餐厅例子</div>
+        需求：顾客可以下单比萨或饮料，比萨有大小、酱料、底料
+        <ul class="blist" style="margin-top:8px;">
+          <li><span class="hl-blue">Class</span>：Pizza、Customer、Drink、Sauce</li>
+          <li><span class="hl-amber">Attribute</span>：Size（大/小）、Base（底料种类）</li>
+          <li><span class="hl-green">Operation</span>：order()——描述"下单"这个动作，而非持久化实体</li>
+        </ul>
+        <strong>Order</strong> 在此场景中 <strong>最不可能是 Class</strong>，更可能是 Operation。
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===== Tab 4: Sequence Diagram ===== -->
+  <div id="tab-sequence" class="tab-panel">
+
+    <div class="card">
+      <div class="card-label">概念</div>
+      <div class="card-title">Sequence Diagram（时序图）</div>
+      <div class="keywords">
+        <span class="kw green">Sequence Diagram</span>
+        <span class="kw blue">Lifeline</span>
+        <span class="kw">Message</span>
+        <span class="kw amber">Time</span>
+        <span class="kw">Triggering Order</span>
+      </div>
+      <div class="card-body">
+        Sequence Diagram 描述对象之间<span class="hl-green">随时间推移的交互顺序</span>，是 UML 行为图（Behavioral Diagram）的一种。
+      </div>
+      <div class="summary-grid">
+        <div class="summary-cell">
+          <div class="sc-label">水平轴</div>
+          <div class="sc-val">参与交互的 Objects（对象），每个对象有一条生命线</div>
+        </div>
+        <div class="summary-cell">
+          <div class="sc-label">垂直轴</div>
+          <div class="sc-val">Time（时间），从上到下时间递增</div>
+        </div>
+        <div class="summary-cell">
+          <div class="sc-label">水平箭头</div>
+          <div class="sc-val">Message（消息），对象间的调用或回复</div>
+        </div>
+      </div>
+      <div class="note-box">
+        <div class="note-label">事件顺序依据</div>
+        时序图中事件排列顺序由 <strong>Triggering Time（触发时间）</strong> 决定——谁先被触发，谁就排在上方。
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">对比</div>
+      <div class="card-title">Class Diagram vs. Sequence Diagram</div>
+      <div class="keywords">
+        <span class="kw">Static</span>
+        <span class="kw green">Dynamic</span>
+        <span class="kw blue">Structure</span>
+        <span class="kw amber">Behavior</span>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th></th><th>Class Diagram</th><th>Sequence Diagram</th></tr></thead>
+          <tbody>
+            <tr><td>性质</td><td>静态（Static）</td><td>动态（Dynamic）</td></tr>
+            <tr><td>描述内容</td><td>类的结构与关系</td><td>对象间的交互与时序</td></tr>
+            <tr><td>时间信息</td><td>❌ 无法表示</td><td>✅ 垂直轴即时间</td></tr>
+            <tr><td>算法逻辑</td><td>❌ 无法表示</td><td>✅ 可展示调用顺序</td></tr>
+            <tr><td>UML 分类</td><td>Structure Diagram</td><td>Behavior Diagram</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="green-box">
+        <div class="note-label">记忆口诀</div>
+        "类图看结构，时序看过程" — Class Diagram 是快照，Sequence Diagram 是电影。
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===== Tab 5: OO 建模 ===== -->
+  <div id="tab-oo" class="tab-panel">
+
+    <div class="card">
+      <div class="card-label">面向对象建模</div>
+      <div class="card-title">OO 建模的核心思想</div>
+      <div class="keywords">
+        <span class="kw green">Object-Oriented</span>
+        <span class="kw">Class</span>
+        <span class="kw">Object</span>
+        <span class="kw blue">Encapsulation</span>
+        <span class="kw amber">Inheritance</span>
+      </div>
+      <div class="card-body">
+        面向对象建模将现实世界中的事物抽象为<span class="hl">类（Class）</span>，类的实例称为<span class="hl">对象（Object）</span>。UML 是描述 OO 模型的标准图形语言。
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>OO 概念</th><th>含义</th><th>UML 体现</th></tr></thead>
+          <tbody>
+            <tr><td>Class</td><td>对象的蓝图/模板</td><td>类图中的矩形框</td></tr>
+            <tr><td>Object</td><td>Class 的具体实例</td><td>时序图中的对象（带生命线）</td></tr>
+            <tr><td>Inheritance</td><td>子类复用父类的属性和方法</td><td>Generalization 箭头</td></tr>
+            <tr><td>Encapsulation</td><td>隐藏内部实现，只暴露接口</td><td>Private/Public 可见性标记</td></tr>
+            <tr><td>Association</td><td>类之间的使用关系</td><td>Association / Aggregation / Composition</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">考点总结</div>
+      <div class="card-title">Week 5 高频考点速查</div>
+      <div class="keywords">
+        <span class="kw red">易错点</span>
+      </div>
+      <ul class="blist">
+        <li><strong>Part-whole 关系</strong>用 Aggregation 或 Composition 表示，不是 Generalization</li>
+        <li><strong>Generalization</strong> = 继承（is-a），箭头从子类指向父类，箭头是空心三角</li>
+        <li><strong>抽象类</strong>类名在 UML 中用<em>斜体</em>表示，无法直接实例化</li>
+        <li><strong>多重性数字</strong>写在对面，约束的是它所在那侧的数量</li>
+        <li><strong>Class Diagram</strong> 不能表示时序和算法；要用 Sequence Diagram</li>
+        <li><strong>Sequence Diagram 垂直轴</strong> = Time（时间），水平排列的是 Objects</li>
+        <li><strong>事件顺序</strong>由 Triggering Time 决定，不是重要性或持续时长</li>
+        <li><strong>Order</strong> 在餐厅例子中是 Operation，不是 Class</li>
+        <li><strong>Composition（实心菱形）</strong>：部分离开整体就消失；Queue 内嵌 Array 是典型例子</li>
+      </ul>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+</script>
+</body>
+</html>

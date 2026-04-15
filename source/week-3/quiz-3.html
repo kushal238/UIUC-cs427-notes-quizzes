@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Software Engineering Quiz — Module 2</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f7f7f5;
+    --surface: #ffffff;
+    --border: #e2e2de;
+    --text: #1a1a18;
+    --muted: #6b6b67;
+    --accent: #2563eb;
+    --correct-bg: #dcfce7;
+    --correct-border: #16a34a;
+    --correct-text: #14532d;
+    --wrong-bg: #fee2e2;
+    --wrong-border: #dc2626;
+    --wrong-text: #7f1d1d;
+    --reveal-bg: #dbeafe;
+    --reveal-border: #2563eb;
+    --reveal-text: #1e3a8a;
+    --expl-bg: #f3f4f6;
+    --radius: 6px;
+  }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 32px 16px 60px;
+  }
+
+  .container { max-width: 720px; margin: 0 auto; }
+
+  header { margin-bottom: 32px; }
+  header h1 { font-size: 1.35rem; font-weight: 600; letter-spacing: -0.02em; }
+  header p { font-size: 0.82rem; color: var(--muted); margin-top: 4px; font-family: 'IBM Plex Mono', monospace; }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    align-items: center;
+    border-bottom: 2px solid var(--border);
+    margin-bottom: 28px;
+    gap: 0;
+  }
+
+  .tab-btn {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 500;
+    padding: 10px 18px;
+    border: none;
+    background: none;
+    color: var(--muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: color 0.15s, border-color 0.15s;
+    white-space: nowrap;
+  }
+  .tab-btn.active { color: var(--text); border-bottom-color: var(--text); }
+  .tab-btn:hover:not(.active) { color: var(--text); }
+
+  .tab-actions {
+    margin-left: auto;
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    padding-bottom: 2px;
+  }
+
+  .action-btn {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.73rem;
+    padding: 5px 11px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--muted);
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+    white-space: nowrap;
+  }
+  .action-btn:hover { border-color: var(--text); color: var(--text); }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* Score */
+  .score-bar {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .score-pill {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  /* Question card */
+  .q-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 22px 24px;
+    margin-bottom: 14px;
+    transition: border-color 0.2s;
+  }
+  .q-card:hover { border-color: #c8c8c4; }
+
+  .q-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--muted);
+    margin-bottom: 8px;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+
+  .q-text {
+    font-size: 0.93rem;
+    font-weight: 500;
+    line-height: 1.55;
+    margin-bottom: 16px;
+    color: var(--text);
+  }
+
+  .options { display: flex; flex-direction: column; gap: 7px; }
+
+  /* Base option — used before answering */
+  .opt {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 0.87rem;
+    padding: 10px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg);
+    color: var(--text);
+    cursor: pointer;
+    text-align: left;
+    transition: border-color 0.15s, background 0.15s;
+    line-height: 1.45;
+    width: 100%;
+  }
+  .opt:hover:not([disabled]) {
+    border-color: var(--accent);
+    background: #eff6ff;
+  }
+  .opt[disabled] { cursor: default; }
+
+  /* Post-answer states — className fully replaced, !important ensures override */
+  .opt-correct {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 0.87rem;
+    padding: 10px 14px;
+    border-radius: var(--radius);
+    text-align: left;
+    line-height: 1.45;
+    width: 100%;
+    cursor: default;
+    border: 1.5px solid var(--correct-border) !important;
+    background: var(--correct-bg) !important;
+    color: var(--correct-text) !important;
+    font-weight: 500;
+  }
+
+  .opt-wrong {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 0.87rem;
+    padding: 10px 14px;
+    border-radius: var(--radius);
+    text-align: left;
+    line-height: 1.45;
+    width: 100%;
+    cursor: default;
+    border: 1.5px solid var(--wrong-border) !important;
+    background: var(--wrong-bg) !important;
+    color: var(--wrong-text) !important;
+  }
+
+  .opt-reveal {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 0.87rem;
+    padding: 10px 14px;
+    border-radius: var(--radius);
+    text-align: left;
+    line-height: 1.45;
+    width: 100%;
+    cursor: default;
+    border: 1.5px solid var(--reveal-border) !important;
+    background: var(--reveal-bg) !important;
+    color: var(--reveal-text) !important;
+  }
+
+  .opt-neutral {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 0.87rem;
+    padding: 10px 14px;
+    border-radius: var(--radius);
+    text-align: left;
+    line-height: 1.45;
+    width: 100%;
+    cursor: default;
+    border: 1.5px solid var(--border);
+    background: var(--bg);
+    color: var(--muted);
+  }
+
+  /* Explanation */
+  .explanation {
+    display: none;
+    margin-top: 12px;
+    background: var(--expl-bg);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    font-size: 0.83rem;
+    color: var(--text);
+    line-height: 1.6;
+  }
+  .explanation.show { display: block; }
+
+  .expl-title {
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    margin-bottom: 8px;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  .expl-list { list-style: none; display: flex; flex-direction: column; gap: 0; }
+  .expl-list li {
+    padding: 6px 0;
+    border-bottom: 1px solid #e4e4e0;
+    font-size: 0.83rem;
+    line-height: 1.55;
+  }
+  .expl-list li:last-child { border-bottom: none; padding-bottom: 0; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>Software Engineering — Quiz</h1>
+    <p>Module 2 · Requirements Engineering · Coursera Original Questions</p>
+  </header>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('coursera', this)">题目</button>
+    <div class="tab-actions">
+      <button class="action-btn" onclick="revealAll()">Reveal all</button>
+      <button class="action-btn" onclick="resetAll()">Reset</button>
+    </div>
+  </div>
+
+  <div id="tab-coursera" class="tab-panel active">
+    <div class="score-bar">
+      Score: <span class="score-pill" id="score-display">— / 15</span>
+    </div>
+    <div id="questions-container"></div>
+  </div>
+</div>
+
+<script>
+const questions = [
+  {
+    num: 1,
+    text: "In the following options, which is NOT among the reasons to write requirements according to the lecture video?",
+    options: [
+      "Managers could use requirements to allocate resources and manage the development",
+      "Developers could implement the system according to requirements",
+      "Testers could test the software developed against the requirements",
+      "Support engineers could use the requirements to decide whether using a system shall be discontinued or not"
+    ],
+    correct: 3,
+    explanations: [
+      "❌ Managers could use requirements to allocate resources and manage the development — This IS a valid reason. Managers rely on requirements to plan resources, timelines, and development priorities.",
+      "❌ Developers could implement the system according to requirements — This IS a valid reason. Requirements serve as the blueprint developers follow during implementation.",
+      "❌ Testers could test the software developed against the requirements — This IS a valid reason. Testers use requirements as the acceptance criteria to verify the software behaves correctly.",
+      "✅ Support engineers could use the requirements to decide whether using a system shall be discontinued or not — This is NOT a reason to write requirements. Discontinuation decisions are a business/operational concern, not driven by requirements specifications."
+    ]
+  },
+  {
+    num: 2,
+    text: "Which of the following statements is a functional requirement?",
+    options: [
+      "The server code shall be written in C.",
+      "A text message shall be sent to the customer's phone when the customer signs up.",
+      "A new user shall be able to finish ordering an equipment by navigating through the system UI within 10 minutes.",
+      "The search service shall answer a query in 2 seconds."
+    ],
+    correct: 1,
+    explanations: [
+      "❌ The server code shall be written in C. — This is a technical/implementation constraint, not a functional requirement describing system behavior.",
+      "✅ A text message shall be sent to the customer's phone when the customer signs up. — This IS a functional requirement: it describes a specific system action (send SMS) triggered by a specific event (sign-up).",
+      "❌ A new user shall be able to finish ordering an equipment by navigating through the system UI within 10 minutes. — The '10 minutes' time constraint makes this a non-functional requirement (usability/performance).",
+      "❌ The search service shall answer a query in 2 seconds. — The '2 seconds' constraint is a performance (non-functional) requirement."
+    ]
+  },
+  {
+    num: 3,
+    text: "Which of the following statements is a non-functional requirement?",
+    options: [
+      "Every invoice shall be assigned with a unique identifier.",
+      "The table's full contents shall be displayed within 3 seconds.",
+      "The system shall record users' status when they log in to the system.",
+      "A text message shall be sent to the customer's phone when the customer signs up."
+    ],
+    correct: 1,
+    explanations: [
+      "❌ Every invoice shall be assigned with a unique identifier. — This is a functional requirement describing a specific data management behavior.",
+      "✅ The table's full contents shall be displayed within 3 seconds. — The 'within 3 seconds' constraint is a performance requirement, making this non-functional.",
+      "❌ The system shall record users' status when they log in to the system. — This describes a specific system action (record status), so it is a functional requirement.",
+      "❌ A text message shall be sent to the customer's phone when the customer signs up. — This describes a specific triggered behavior, so it is a functional requirement."
+    ]
+  },
+  {
+    num: 4,
+    text: "Which of the following is typically NOT used as notations for requirement specifications?",
+    options: [
+      "UML",
+      "User story",
+      "Test plan",
+      "Data flow diagram"
+    ],
+    correct: 2,
+    explanations: [
+      "❌ UML — UML IS a standard notation for requirements; it is used for use case diagrams, sequence diagrams, and more.",
+      "❌ User story — User stories ARE a common requirements notation, especially in agile development.",
+      "✅ Test plan — A test plan is a testing-phase artifact used to plan and document testing activities. It is NOT a requirements specification notation.",
+      "❌ Data flow diagram — Data flow diagrams ARE used to model how data moves through a system, and are a valid requirements notation."
+    ]
+  },
+  {
+    num: 5,
+    text: "When writing a mandatory requirement, you wrote \"The driver's door ______ be closed once the car is moving.\"",
+    options: [
+      "shall",
+      "will",
+      "should"
+    ],
+    correct: 0,
+    explanations: [
+      "✅ shall — 'Shall' expresses a mandatory requirement. For safety-critical requirements like this, 'shall' is the correct and standard term.",
+      "❌ will — 'Will' expresses intent or a prediction about future behavior, not a formal obligation.",
+      "❌ should — 'Should' expresses an optional or recommended requirement, not a mandatory one."
+    ]
+  },
+  {
+    num: 6,
+    text: "Which of the following is a descriptive statement?",
+    options: [
+      "The same person cannot be located in two different buildings at the same time.",
+      "A user shall not use the same registration code more than once.",
+      "Train doors shall always remain closed when the train is moving.",
+      "A person shall not borrow more than three books at the same time."
+    ],
+    correct: 0,
+    explanations: [
+      "✅ The same person cannot be located in two different buildings at the same time. — This is a descriptive statement: it states a real-world physical fact (domain knowledge) that is always true, independent of any software system.",
+      "❌ A user shall not use the same registration code more than once. — The use of 'shall' makes this a prescriptive (requirement) statement imposing a constraint on system behavior.",
+      "❌ Train doors shall always remain closed when the train is moving. — 'Shall always' indicates a mandatory requirement, making this prescriptive.",
+      "❌ A person shall not borrow more than three books at the same time. — 'Shall not' is a constraint on behavior, making this a prescriptive requirement statement."
+    ]
+  },
+  {
+    num: 7,
+    text: "Which of the following statements of requirements engineering is NOT correct?",
+    options: [
+      "Requirements engineering is concerned with designing a software system with respect to the requirements.",
+      "Requirements engineering helps engineers understand and adjust requirements.",
+      "Requirements engineering is concerned with real-world goals for functions of a software system and constraints on the software system.",
+      "Requirements engineering is about discovering stakeholders' needs along with adjusting their expectations."
+    ],
+    correct: 0,
+    explanations: [
+      "✅ Requirements engineering is concerned with designing a software system with respect to the requirements. — This is NOT correct. Requirements Engineering focuses on discovering and defining what the system should do. Designing how to build it is the responsibility of the Design Phase.",
+      "❌ Requirements engineering helps engineers understand and adjust requirements. — This IS correct. RE involves iterative clarification and refinement of requirements.",
+      "❌ Requirements engineering is concerned with real-world goals for functions of a software system and constraints on the software system. — This IS correct. RE addresses real-world goals, functional behaviors, and system constraints.",
+      "❌ Requirements engineering is about discovering stakeholders' needs along with adjusting their expectations. — This IS correct. Elicitation and expectation management are core activities of RE."
+    ]
+  },
+  {
+    num: 8,
+    text: "Which of the following is NOT an example of elicitation techniques?",
+    options: [
+      "Questionnaires, surveys, and interviews.",
+      "Brainstorming and focus group.",
+      "User acceptance testing",
+      "Early feedback gathering from stakeholders."
+    ],
+    correct: 2,
+    explanations: [
+      "❌ Questionnaires, surveys, and interviews. — These ARE elicitation techniques used to gather requirements from stakeholders.",
+      "❌ Brainstorming and focus group. — These ARE elicitation techniques used to generate and explore requirements collaboratively.",
+      "✅ User acceptance testing — UAT is a Testing Phase activity where users verify the finished software meets their needs. It occurs after development, not during requirements elicitation.",
+      "❌ Early feedback gathering from stakeholders. — Gathering early feedback (e.g., via prototypes or demos) IS an elicitation technique to discover and refine requirements."
+    ]
+  },
+  {
+    num: 9,
+    text: "Which of the following statements is true about requirements elicitation?",
+    options: [
+      "It is about guiding the developers to produce correct products according to the requirements",
+      "It is about making sure that the tasks given by the product manager are correct",
+      "It is about discovering stakeholder expectations and adjusting the expectations",
+      "It is about making sure that the stakeholders understand how the functionalities are implemented"
+    ],
+    correct: 2,
+    explanations: [
+      "❌ It is about guiding the developers to produce correct products according to the requirements — This describes the purpose of requirements documents, not elicitation itself. Elicitation is about discovering requirements, not guiding developers.",
+      "❌ It is about making sure that the tasks given by the product manager are correct — This is not a definition of elicitation; elicitation focuses on stakeholders broadly, not just verifying a PM's tasks.",
+      "✅ It is about discovering stakeholder expectations and adjusting the expectations — This IS the correct definition. Elicitation involves uncovering what stakeholders need and managing/aligning those expectations.",
+      "❌ It is about making sure that the stakeholders understand how the functionalities are implemented — Elicitation is about understanding what stakeholders want, not explaining implementation details to them."
+    ]
+  },
+  {
+    num: 10,
+    text: "Which of the following is NOT a main component for use case requirements?",
+    options: [
+      "Use case.",
+      "Use case diagrams.",
+      "Actors.",
+      "Test cases."
+    ],
+    correct: 3,
+    explanations: [
+      "❌ Use case. — Use cases ARE a main component; they describe sequences of events the system performs in response to actions.",
+      "❌ Use case diagrams. — Use case diagrams ARE a main component; they visually represent relationships between actors and use cases.",
+      "❌ Actors. — Actors ARE a main component; they represent the external entities that interact with the system.",
+      "✅ Test cases. — Test cases are a Testing Phase artifact, not a component of use case requirements. The three main components are: Use Cases, Use Case Diagrams, and Actors."
+    ]
+  },
+  {
+    num: 11,
+    text: "Which of the following statements is NOT true about Use Case?",
+    options: [
+      "A use case describes a sequence of events that happen when the system responds to an action.",
+      "The description of a use case needs to be a major piece of functionalities being complete from the beginning to end.",
+      "The description of a use case needs to be easy to read, short but still tell a story.",
+      "A use case cannot be associated with more than one actor."
+    ],
+    correct: 3,
+    explanations: [
+      "❌ A use case describes a sequence of events that happen when the system responds to an action. — This IS true. A use case captures the event sequence triggered by an actor's action.",
+      "❌ The description of a use case needs to be a major piece of functionalities being complete from the beginning to end. — This IS true. A use case should represent a complete, end-to-end unit of functionality.",
+      "❌ The description of a use case needs to be easy to read, short but still tell a story. — This IS true. Use cases should be concise yet tell a coherent functional story.",
+      "✅ A use case cannot be associated with more than one actor. — This is NOT true. A use case can involve multiple actors; for example, both a customer and a system admin might be actors in the same use case."
+    ]
+  },
+  {
+    num: 12,
+    text: "Which of the following statement is NOT true about Actors?",
+    options: [
+      "Actors can both provide inputs and receive outputs from the system.",
+      "Actors can receive outputs from the system.",
+      "Actors are inside of the system and thus part of the system.",
+      "Actors can provide inputs to the system."
+    ],
+    correct: 2,
+    explanations: [
+      "❌ Actors can both provide inputs and receive outputs from the system. — This IS true. Actors interact bidirectionally with the system.",
+      "❌ Actors can receive outputs from the system. — This IS true. An actor may receive notifications, data, or responses from the system.",
+      "✅ Actors are inside of the system and thus part of the system. — This is NOT true. Actors are always external to the system. They reside outside the system boundary and interact with it from the outside.",
+      "❌ Actors can provide inputs to the system. — This IS true. An actor can initiate actions and send data to the system."
+    ]
+  },
+  {
+    num: 13,
+    text: "Which of following Use Cases is used for helping decide design scope?",
+    options: [
+      "Actor-goal list",
+      "All of Actor-goal list, Use case brief, Causal use cases, and Fully addressed use cases",
+      "Casual use cases",
+      "Fully dressed use cases"
+    ],
+    correct: 0,
+    explanations: [
+      "✅ Actor-goal list — The actor-goal list is the most high-level format, used specifically to enumerate what each actor wants to achieve. This helps teams determine the scope of the design.",
+      "❌ All of Actor-goal list, Use case brief, Causal use cases, and Fully addressed use cases — Not all of these are used for deciding scope; the actor-goal list is the specific tool for that purpose.",
+      "❌ Casual use cases — Casual use cases provide a narrative-style description of scenarios; they are used for communication, not primarily for deciding design scope.",
+      "❌ Fully dressed use cases — Fully dressed use cases are the most detailed format, used for precise specification of requirements, not for scoping decisions."
+    ]
+  },
+  {
+    num: 14,
+    text: "Which of the following statements is NOT correct for Causal and Fully Dressed use cases?",
+    options: [
+      "Causal and fully dressed use cases are used to tell developers how to implement some requirements.",
+      "Causal and fully dressed use cases emphasize \"main success scenarios\".",
+      "Causal and fully dressed use cases should also include requirements on dealing with failures.",
+      "Causal use cases consist of normal paragraphs but fully dressed use cases have labeled sections."
+    ],
+    correct: 0,
+    explanations: [
+      "✅ Causal and fully dressed use cases are used to tell developers how to implement some requirements. — This is NOT correct. Use cases describe what the system should do (behavior), not how to implement it. Implementation decisions belong to the Design Phase.",
+      "❌ Causal and fully dressed use cases emphasize \"main success scenarios\". — This IS correct. Both formats center on the primary happy-path flow while also covering alternatives.",
+      "❌ Causal and fully dressed use cases should also include requirements on dealing with failures. — This IS correct. Both formats should document alternative flows and failure handling.",
+      "❌ Causal use cases consist of normal paragraphs but fully dressed use cases have labeled sections. — This IS correct. This is the key structural difference between the two formats."
+    ]
+  },
+  {
+    num: 15,
+    text: "\"The book-order process shall be user-friendly.\"\nThe requirement above shows which of the following common flaws in a requirement?",
+    options: [
+      "Unmeasurability",
+      "Contradiction",
+      "Poor structuring",
+      "Inadequacy"
+    ],
+    correct: 0,
+    explanations: [
+      "✅ Unmeasurability — 'User-friendly' cannot be objectively measured or tested. A good requirement must be verifiable; this should be rewritten with measurable criteria (e.g., 'shall be completed within 3 clicks').",
+      "❌ Contradiction — Contradiction occurs when two requirements conflict with each other. This requirement does not contradict another.",
+      "❌ Poor structuring — Poor structuring refers to requirements that are written in a confusing or disorganized way. This sentence is clearly structured, just unmeasurable.",
+      "❌ Inadequacy — Inadequacy refers to missing or incomplete requirements. The flaw here is not incompleteness but the lack of a measurable criterion."
+    ]
+  }
+];
+
+let answered = new Array(questions.length).fill(false);
+let correctCount = 0;
+
+function buildQuestions() {
+  const container = document.getElementById('questions-container');
+  container.innerHTML = '';
+  questions.forEach((q, idx) => {
+    const card = document.createElement('div');
+    card.className = 'q-card';
+    card.id = `qcard-${idx}`;
+
+    const optionsHTML = q.options.map((opt, oi) =>
+      `<button class="opt" id="opt-${idx}-${oi}" onclick="selectOption(${idx}, ${oi})">${opt}</button>`
+    ).join('');
+
+    const explItems = q.explanations.map(e => `<li>${e}</li>`).join('');
+
+    card.innerHTML = `
+      <div class="q-num">Q${q.num}</div>
+      <div class="q-text">${q.text.replace(/\n/g, '<br>')}</div>
+      <div class="options" id="opts-${idx}">${optionsHTML}</div>
+      <div class="explanation" id="expl-${idx}">
+        <div class="expl-title">Explanation</div>
+        <ul class="expl-list">${explItems}</ul>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+  updateScore();
+}
+
+function selectOption(qIdx, optIdx) {
+  if (answered[qIdx]) return;
+  answered[qIdx] = true;
+
+  const q = questions[qIdx];
+  const isCorrect = optIdx === q.correct;
+  if (isCorrect) correctCount++;
+
+  q.options.forEach((_, oi) => {
+    const btn = document.getElementById(`opt-${qIdx}-${oi}`);
+    btn.disabled = true;
+    if (oi === optIdx && isCorrect) {
+      btn.className = 'opt-correct';
+    } else if (oi === optIdx && !isCorrect) {
+      btn.className = 'opt-wrong';
+    } else if (oi === q.correct && !isCorrect) {
+      btn.className = 'opt-reveal';
+    } else {
+      btn.className = 'opt-neutral';
+    }
+  });
+
+  document.getElementById(`expl-${qIdx}`).classList.add('show');
+  updateScore();
+}
+
+function revealAll() {
+  questions.forEach((q, idx) => {
+    if (answered[idx]) return;
+    answered[idx] = true;
+
+    q.options.forEach((_, oi) => {
+      const btn = document.getElementById(`opt-${idx}-${oi}`);
+      btn.disabled = true;
+      if (oi === q.correct) {
+        btn.className = 'opt-reveal';
+      } else {
+        btn.className = 'opt-neutral';
+      }
+    });
+
+    document.getElementById(`expl-${idx}`).classList.add('show');
+  });
+  updateScore();
+}
+
+function resetAll() {
+  answered = new Array(questions.length).fill(false);
+  correctCount = 0;
+  buildQuestions();
+}
+
+function switchTab(tab, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(`tab-${tab}`).classList.add('active');
+}
+
+function updateScore() {
+  const total = answered.filter(Boolean).length;
+  const display = total === 0 ? '— / 15' : `${correctCount} / ${total} answered`;
+  document.getElementById('score-display').textContent = display;
+}
+
+buildQuestions();
+</script>
+</body>
+</html>

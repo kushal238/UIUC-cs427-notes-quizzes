@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$comment": "Prototype: Week 6 Design Patterns. Copy to config/week_N_*.json per module.",
+  "moduleId": "week_6",
+  "mergePageFilename": "week_6_design_patterns.html",
+  "titles": {
+    "documentTitle": "Week 6 · OO Paterns Part 2 & Quiz",
+    "notesH1": "Week 6 - OO Paterns - Part 2",
+    "quizH2": "Week 6 - quiz"
+  },
+  "subtitles": {
+    "notesHeaderMeta": false,
+    "quizTagline": false
+  },
+  "assets": {
+    "mindmapIframeSrc": "mindmap/week_6_design_patterns_mindmap.html",
+    "mindmapPngFallback": "assets/week6-mindmap.png"
+  },
+  "notesSourceFiles": {
+    "description": "Optional: original split files for reference only",
+    "notes": "source/week-6/notes_6_design_patterns.html",
+    "quiz": "source/week-6/quiz_6_design_patterns.html"
+  },
+  "notesTabs": [
+    { "id": "mindmap", "label": "导图", "defaultActive": true },
+    { "id": "overview", "label": "Design Patterns" },
+    { "id": "creational", "label": "Creational" },
+    { "id": "structural", "label": "Structural" },
+    { "id": "behavioral", "label": "Behavioral" },
+    { "id": "tips", "label": "考点" }
+  ],
+  "quiz": {
+    "sourceTabLabel": "题目",
+    "toolbarOrder": ["sourceTab", "spacer", "reset", "score"],
+    "comment": "reset 必须在 score 左侧；DOM: .qz-actions 内 [Reset][Score]"
+  },
+  "uiRules": {
+    "blocksNoBorder": true,
+    "cardsNoCardLabel": true,
+    "noteLabelInCalloutsAllowed": true
+  }
+}

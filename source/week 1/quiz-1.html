@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Software Engineering Quiz</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f7f7f5;
+    --surface: #ffffff;
+    --border: #e2e2de;
+    --text: #1a1a18;
+    --muted: #6b6b67;
+    --accent: #2563eb;
+    --correct-bg: #dcfce7;
+    --correct-border: #16a34a;
+    --correct-text: #14532d;
+    --wrong-bg: #fee2e2;
+    --wrong-border: #dc2626;
+    --wrong-text: #7f1d1d;
+    --reveal-bg: #dbeafe;
+    --reveal-border: #2563eb;
+    --reveal-text: #1e3a8a;
+    --expl-bg: #f3f4f6;
+    --tab-active: #1a1a18;
+    --radius: 6px;
+  }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 32px 16px;
+  }
+
+  .container {
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  header {
+    margin-bottom: 32px;
+  }
+
+  header h1 {
+    font-size: 1.35rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--text);
+  }
+
+  header p {
+    font-size: 0.82rem;
+    color: var(--muted);
+    margin-top: 4px;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 2px solid var(--border);
+    margin-bottom: 28px;
+    align-items: center;
+  }
+
+  .tab-btn {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 500;
+    padding: 10px 18px;
+    border: none;
+    background: none;
+    color: var(--muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: color 0.15s, border-color 0.15s;
+    white-space: nowrap;
+  }
+
+  .tab-btn.active {
+    color: var(--tab-active);
+    border-bottom-color: var(--tab-active);
+  }
+
+  .tab-btn:hover:not(.active) {
+    color: var(--text);
+  }
+
+  .reset-btn {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem;
+    padding: 5px 12px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--muted);
+    border-radius: var(--radius);
+    cursor: pointer;
+    margin-left: auto;
+    transition: border-color 0.15s, color 0.15s;
+  }
+
+  .reset-btn:hover {
+    border-color: var(--text);
+    color: var(--text);
+  }
+
+  /* Tab panels */
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* Score bar */
+  .score-bar {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .score-pill {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  /* Question card */
+  .q-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 22px 24px;
+    margin-bottom: 14px;
+    transition: border-color 0.2s;
+  }
+
+  .q-card:hover { border-color: #c8c8c4; }
+
+  .q-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--muted);
+    margin-bottom: 8px;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+
+  .q-text {
+    font-size: 0.93rem;
+    font-weight: 500;
+    line-height: 1.5;
+    margin-bottom: 16px;
+    color: var(--text);
+  }
+
+  /* Options */
+  .options { display: flex; flex-direction: column; gap: 7px; }
+
+  .opt {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 0.87rem;
+    padding: 10px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg);
+    color: var(--text);
+    cursor: pointer;
+    text-align: left;
+    transition: border-color 0.15s, background 0.15s;
+    line-height: 1.45;
+  }
+
+  .opt:hover:not([disabled]) {
+    border-color: var(--accent);
+    background: #eff6ff;
+  }
+
+  .opt[disabled] { cursor: default; }
+
+  .opt-correct {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 0.87rem;
+    padding: 10px 14px;
+    border-radius: var(--radius);
+    text-align: left;
+    line-height: 1.45;
+    cursor: default;
+    border: 1.5px solid var(--correct-border) !important;
+    background: var(--correct-bg) !important;
+    color: var(--correct-text) !important;
+    font-weight: 500;
+  }
+
+  .opt-wrong {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 0.87rem;
+    padding: 10px 14px;
+    border-radius: var(--radius);
+    text-align: left;
+    line-height: 1.45;
+    cursor: default;
+    border: 1.5px solid var(--wrong-border) !important;
+    background: var(--wrong-bg) !important;
+    color: var(--wrong-text) !important;
+  }
+
+  .opt-reveal {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 0.87rem;
+    padding: 10px 14px;
+    border-radius: var(--radius);
+    text-align: left;
+    line-height: 1.45;
+    cursor: default;
+    border: 1.5px solid var(--reveal-border) !important;
+    background: var(--reveal-bg) !important;
+    color: var(--reveal-text) !important;
+  }
+
+  .opt-neutral {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 0.87rem;
+    padding: 10px 14px;
+    border-radius: var(--radius);
+    text-align: left;
+    line-height: 1.45;
+    cursor: default;
+    border: 1.5px solid var(--border);
+    background: var(--bg);
+    color: var(--muted);
+  }
+
+  /* Explanation */
+  .explanation {
+    display: none;
+    margin-top: 12px;
+    background: var(--expl-bg);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    font-size: 0.83rem;
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  .explanation.show { display: block; }
+
+  .expl-title {
+    font-weight: 600;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+    margin-bottom: 8px;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  .expl-list { list-style: none; display: flex; flex-direction: column; gap: 5px; }
+
+  .expl-list li {
+    padding: 4px 0;
+    border-bottom: 1px solid #e9e9e6;
+    font-size: 0.83rem;
+  }
+
+  .expl-list li:last-child { border-bottom: none; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>Software Engineering — Quiz</h1>
+    <p>Module 1 · Coursera Original Questions</p>
+  </header>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('coursera')">题目</button>
+    <button class="reset-btn" id="reset-btn" onclick="resetTab()">Reset</button>
+  </div>
+
+  <div id="tab-coursera" class="tab-panel active">
+    <div class="score-bar">
+      Score: <span class="score-pill" id="score-display">— / 10</span>
+    </div>
+    <div id="questions-container"></div>
+  </div>
+</div>
+
+<script>
+const questions = [
+  {
+    num: 1,
+    text: "Which of the following is NOT a part of Software Development Life Cycle?",
+    options: ["Requirements Phase", "Design Phase", "Implementation Phase", "Evaluation Phase"],
+    correct: 3,
+    explanations: [
+      "❌ Requirements Phase — This IS part of SDLC; it defines what the system should do.",
+      "❌ Design Phase — This IS part of SDLC; it plans the architecture and system structure.",
+      "❌ Implementation Phase — This IS part of SDLC; it covers actual coding and development.",
+      "✅ Evaluation Phase — This is NOT a standard SDLC phase. The typical phases are Requirements, Design, Implementation, Testing, and Maintenance."
+    ]
+  },
+  {
+    num: 2,
+    text: "The trinity of software project does NOT include which of the following?",
+    options: ["Software System", "Software Design", "Software Users", "Software Development Process"],
+    correct: 1,
+    explanations: [
+      "❌ Software System — This IS part of the trinity; it represents the product itself.",
+      "✅ Software Design — This is NOT part of the trinity. The trinity consists of Software System, Software Users, and Software Development Process.",
+      "❌ Software Users — This IS part of the trinity; users are a key stakeholder element.",
+      "❌ Software Development Process — This IS part of the trinity; it defines how the system is built."
+    ]
+  },
+  {
+    num: 3,
+    text: "______ provides flexibility for changing a component's internal design decisions without impacting the external code using this component's interface.",
+    options: ["Project Management", "Divide and Conquer", "Inheritance", "Information Hiding"],
+    correct: 3,
+    explanations: [
+      "❌ Project Management — Relates to planning and organizing, not design flexibility.",
+      "❌ Divide and Conquer — Refers to breaking problems into smaller subproblems; not specifically about hiding internals.",
+      "❌ Inheritance — An OOP mechanism for code reuse, not about hiding internal design from external code.",
+      "✅ Information Hiding — Allows a component's internal implementation to change without affecting external users of its interface, improving modularity and maintainability."
+    ]
+  },
+  {
+    num: 4,
+    text: "Which of the following is a characteristic of Software?",
+    options: ["Malleable", "Simple", "Constant", "Requiring a single person to develop"],
+    correct: 0,
+    explanations: [
+      "✅ Malleable — Software is highly malleable; it can be easily modified and adapted compared to physical products.",
+      "❌ Simple — Software systems are typically complex, not simple.",
+      "❌ Constant — Software evolves continuously; it is not constant.",
+      "❌ Requiring a single person to develop — Most real-world software requires teams, making this false."
+    ]
+  },
+  {
+    num: 5,
+    text: "Which of the following roles is/are project stakeholders of a software project? Select the best answer.",
+    options: ["Support Engineer", "Designer", "Tester", "All of above"],
+    correct: 3,
+    explanations: [
+      "❌ Support Engineer — A stakeholder, but selecting only this is incomplete.",
+      "❌ Designer — A stakeholder, but selecting only this is incomplete.",
+      "❌ Tester — A stakeholder, but selecting only this is incomplete.",
+      "✅ All of above — All three roles — Support Engineer, Designer, and Tester — are project stakeholders in a software project."
+    ]
+  },
+  {
+    num: 6,
+    text: "Is the following statement TRUE?\nIn the context of a software project, users are different from customers.",
+    options: ["True", "False"],
+    correct: 0,
+    explanations: [
+      "✅ True — Users are the people who use the software, while customers are those who pay for it. They can be different people (e.g., a company buys software for its employees).",
+      "❌ False — This is incorrect; users and customers are indeed distinct roles in a software project context."
+    ]
+  },
+  {
+    num: 7,
+    text: "The following statement is true or false?\nAdding more team members helps solve software crisis.",
+    options: ["True", "False"],
+    correct: 1,
+    explanations: [
+      "❌ True — This is incorrect. Adding more people to a late project makes it later (Brooks' Law).",
+      "✅ False — Adding more team members does NOT solve a software crisis. New members need onboarding time and increase communication overhead, often making things worse (Brooks' Law from 'The Mythical Man-Month')."
+    ]
+  },
+  {
+    num: 8,
+    text: "John is an efficient programmer and is open to learn and improve. However, John has no prior experience of working in a team. Which of the following attributes does John most importantly needs to have to become a successful software engineer?",
+    options: ["Working alone", "Being defensive about his work", "Ability to efficiently/effectively interact and work in a team", "None. John already has the required skills."],
+    correct: 2,
+    explanations: [
+      "❌ Working alone — Software engineering is a team-based discipline; working alone is not the key attribute needed.",
+      "❌ Being defensive about his work — Being defensive hinders collaboration and growth; it is a negative attribute.",
+      "✅ Ability to efficiently/effectively interact and work in a team — Software engineering requires strong teamwork and communication. Since John lacks this, it is the most important attribute he needs to develop.",
+      "❌ None. John already has the required skills. — Incorrect; John explicitly lacks team experience, which is critical."
+    ]
+  },
+  {
+    num: 9,
+    text: "Which of the statements below is NOT true?",
+    options: [
+      "Software engineering primarily concerns about a Multi-Person Development effort",
+      "Software engineering primarily concerns about writing a single version of a program",
+      "Software engineering and programming are two different concepts"
+    ],
+    correct: 1,
+    explanations: [
+      "❌ Software engineering primarily concerns about a Multi-Person Development effort — This IS true; SE inherently involves teams.",
+      "✅ Software engineering primarily concerns about writing a single version of a program — This is NOT true. SE involves multi-version, long-lived systems, not just a single version of a program.",
+      "❌ Software engineering and programming are two different concepts — This IS true; SE is broader, encompassing processes, design, teamwork, and maintenance beyond just coding."
+    ]
+  },
+  {
+    num: 10,
+    text: "Which of the following does NOT belong to the competing goals of software project?",
+    options: [
+      "Time used by developers to develop the software",
+      "Cost for the customers to pay the software project team to develop the software",
+      "Quality of the developed software",
+      "Market share occupied by the developed software"
+    ],
+    correct: 3,
+    explanations: [
+      "❌ Time used by developers to develop the software — Time IS a competing goal (schedule/time constraint).",
+      "❌ Cost for the customers to pay the software project team to develop the software — Cost IS a competing goal.",
+      "❌ Quality of the developed software — Quality IS a competing goal.",
+      "✅ Market share occupied by the developed software — Market share is a business metric, NOT one of the classical competing goals (Time, Cost, Quality) of a software project."
+    ]
+  }
+];
+
+let answered = new Array(questions.length).fill(false);
+let correctCount = 0;
+
+function buildQuestions() {
+  const container = document.getElementById('questions-container');
+  container.innerHTML = '';
+  questions.forEach((q, idx) => {
+    const card = document.createElement('div');
+    card.className = 'q-card';
+    card.id = `qcard-${idx}`;
+
+    const optionsHTML = q.options.map((opt, oi) =>
+      `<button class="opt" id="opt-${idx}-${oi}" onclick="selectOption(${idx}, ${oi})">${opt}</button>`
+    ).join('');
+
+    const explItems = q.explanations.map(e => `<li>${e}</li>`).join('');
+
+    card.innerHTML = `
+      <div class="q-num">Q${q.num}</div>
+      <div class="q-text">${q.text.replace(/\n/g, '<br>')}</div>
+      <div class="options" id="opts-${idx}">${optionsHTML}</div>
+      <div class="explanation" id="expl-${idx}">
+        <div class="expl-title">Explanation</div>
+        <ul class="expl-list">${explItems}</ul>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+  updateScore();
+}
+
+function selectOption(qIdx, optIdx) {
+  if (answered[qIdx]) return;
+  answered[qIdx] = true;
+
+  const q = questions[qIdx];
+  const isCorrect = optIdx === q.correct;
+  if (isCorrect) correctCount++;
+
+  // Update all option styles
+  q.options.forEach((_, oi) => {
+    const btn = document.getElementById(`opt-${qIdx}-${oi}`);
+    btn.disabled = true;
+    if (oi === optIdx && isCorrect) {
+      btn.className = 'opt-correct';
+    } else if (oi === optIdx && !isCorrect) {
+      btn.className = 'opt-wrong';
+    } else if (oi === q.correct && !isCorrect) {
+      btn.className = 'opt-reveal';
+    } else {
+      btn.className = 'opt-neutral';
+    }
+  });
+
+  document.getElementById(`expl-${qIdx}`).classList.add('show');
+  updateScore();
+}
+
+function updateScore() {
+  const total = answered.filter(Boolean).length;
+  const display = total === 0 ? '— / 10' : `${correctCount} / ${total} answered`;
+  document.getElementById('score-display').textContent = display;
+}
+
+function resetTab() {
+  answered = new Array(questions.length).fill(false);
+  correctCount = 0;
+  buildQuestions();
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById(`tab-${tab}`).classList.add('active');
+}
+
+buildQuestions();
+</script>
+</body>
+</html>

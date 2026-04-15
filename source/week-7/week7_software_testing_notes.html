@@ -1,0 +1,431 @@
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600&family=Source+Sans+3:wght@400;500;600&family=Source+Code+Pro:wght@400;500&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#faf9f7;--surface:#ffffff;--surface2:#f4f3f0;
+  --border:#e8e6e1;--border2:#d4d1ca;
+  --text:#1c1b18;--text2:#4a4840;--muted:#8a8780;
+  --accent:#3d6b4f;--accent-light:#edf4ef;
+  --accent2:#7c5c2e;--accent2-light:#fdf4e7;
+  --blue:#2d5fa6;--blue-light:#ebf1fb;
+  --red:#a63d2d;--red-light:#fdf0ef;
+  --tag-bg:#f0ede8;--radius:8px;
+}
+body{font-family:'Source Sans 3',sans-serif;background:var(--bg);color:var(--text);padding:28px 16px 60px}
+.container{max-width:780px;margin:0 auto}
+header{margin-bottom:28px}
+header h1{font-family:'Lora',serif;font-size:1.45rem;font-weight:600;color:var(--text);letter-spacing:-0.01em;line-height:1.3}
+.header-meta{margin-top:6px;font-family:'Source Code Pro',monospace;font-size:0.74rem;color:var(--muted);display:flex;gap:12px;flex-wrap:wrap}
+.header-meta span{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:2px 8px}
+.tab-nav{display:flex;gap:2px;border-bottom:2px solid var(--border);margin-bottom:28px;overflow-x:auto;scrollbar-width:none}
+.tab-nav::-webkit-scrollbar{display:none}
+.tab-btn{font-family:'Source Sans 3',sans-serif;font-size:0.82rem;font-weight:500;padding:8px 15px;border:none;background:none;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;white-space:nowrap;transition:color 0.15s,border-color 0.15s}
+.tab-btn.active{color:var(--text);border-bottom-color:var(--text)}
+.tab-btn:hover:not(.active){color:var(--text2)}
+.tab-panel{display:none}
+.tab-panel.active{display:block;animation:fadeIn 0.2s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:22px 24px;margin-bottom:14px}
+.card:hover{border-color:var(--border2)}
+.card-label{font-family:'Source Code Pro',monospace;font-size:0.68rem;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:9px}
+.card-title{font-family:'Lora',serif;font-size:1.02rem;font-weight:600;color:var(--text);margin-bottom:13px;line-height:1.35}
+.keywords{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.kw{font-family:'Source Code Pro',monospace;font-size:0.74rem;font-weight:500;background:var(--tag-bg);border:1px solid var(--border);border-radius:4px;padding:3px 9px;color:var(--text2)}
+.kw.green{background:var(--accent-light);border-color:#b8d4c0;color:var(--accent)}
+.kw.blue{background:var(--blue-light);border-color:#b0c8e8;color:var(--blue)}
+.kw.amber{background:var(--accent2-light);border-color:#e0c898;color:var(--accent2)}
+.kw.red{background:var(--red-light);border-color:#e8c0b8;color:var(--red)}
+.card-body{font-size:0.89rem;color:var(--text2);line-height:1.65;margin-bottom:13px}
+.card-body:last-child{margin-bottom:0}
+.hl{color:var(--text);font-weight:600}
+.hl-green{color:var(--accent);font-weight:600}
+.hl-blue{color:var(--blue);font-weight:600}
+.hl-amber{color:var(--accent2);font-weight:600}
+.hl-red{color:var(--red);font-weight:600}
+.blist{list-style:none;display:flex;flex-direction:column;gap:6px;margin-bottom:13px}
+.blist:last-child{margin-bottom:0}
+.blist li{font-size:0.87rem;color:var(--text2);padding-left:16px;position:relative;line-height:1.6}
+.blist li::before{content:'—';position:absolute;left:0;color:var(--border2);font-size:0.74rem;top:3px}
+.tbl-wrap{overflow-x:auto;margin-bottom:13px}
+.tbl-wrap:last-child{margin-bottom:0}
+table{width:100%;border-collapse:collapse;font-size:0.85rem}
+th{font-family:'Source Code Pro',monospace;font-size:0.7rem;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);padding:8px 12px;border-bottom:2px solid var(--border);text-align:left;background:var(--surface2)}
+td{padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text2);line-height:1.5;vertical-align:top}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--surface2)}
+td:first-child{font-weight:600;color:var(--text);white-space:nowrap}
+.divider{border:none;border-top:1px solid var(--border);margin:14px 0}
+.note-box{background:var(--accent2-light);border-left:3px solid #d4a866;border-radius:0 var(--radius) var(--radius) 0;padding:11px 13px;font-size:0.85rem;color:var(--text2);line-height:1.6;margin-top:13px}
+.note-box .note-label{font-family:'Source Code Pro',monospace;font-size:0.68rem;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;color:var(--accent2);margin-bottom:4px}
+.green-box{background:var(--accent-light);border-left:3px solid #7ab892;border-radius:0 var(--radius) var(--radius) 0;padding:11px 13px;font-size:0.85rem;color:var(--text2);line-height:1.6;margin-top:13px}
+.green-box .note-label{color:var(--accent);font-family:'Source Code Pro',monospace;font-size:0.68rem;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px}
+.blue-box{background:var(--blue-light);border-left:3px solid #7aaad6;border-radius:0 var(--radius) var(--radius) 0;padding:11px 13px;font-size:0.85rem;color:var(--text2);line-height:1.6;margin-top:13px}
+.blue-box .note-label{color:var(--blue);font-family:'Source Code Pro',monospace;font-size:0.68rem;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px}
+.red-box{background:var(--red-light);border-left:3px solid #d4897a;border-radius:0 var(--radius) var(--radius) 0;padding:11px 13px;font-size:0.85rem;color:var(--text2);line-height:1.6;margin-top:13px}
+.red-box .note-label{color:var(--red);font-family:'Source Code Pro',monospace;font-size:0.68rem;font-weight:500;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px}
+.summary-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:9px;margin-top:4px}
+.summary-cell{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:11px 13px}
+.summary-cell .sc-label{font-family:'Source Code Pro',monospace;font-size:0.66rem;text-transform:uppercase;letter-spacing:0.07em;color:var(--muted);margin-bottom:4px}
+.summary-cell .sc-val{font-size:0.86rem;font-weight:600;color:var(--text);line-height:1.4}
+</style>
+
+<div class="container">
+  <header>
+    <h1>Software Engineering — Week 7 笔记</h1>
+    <div class="header-meta">
+      <span>Module 7</span>
+      <span>Software Testing</span>
+      <span>Coursera</span>
+    </div>
+  </header>
+
+  <nav class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab('overview',this)">Testing 概览</button>
+    <button class="tab-btn" onclick="switchTab('activities',this)">Test Activities</button>
+    <button class="tab-btn" onclick="switchTab('blackwhite',this)">Black vs White Box</button>
+    <button class="tab-btn" onclick="switchTab('pie',this)">PIE 模型</button>
+    <button class="tab-btn" onclick="switchTab('coverage',this)">Coverage & 技法</button>
+  </nav>
+
+  <!-- Tab 1: Testing 概览 -->
+  <div id="tab-overview" class="tab-panel active">
+
+    <div class="card">
+      <div class="card-label">核心概念</div>
+      <div class="card-title">Testing 的目的与局限</div>
+      <div class="keywords">
+        <span class="kw green">Testing</span>
+        <span class="kw">Code Quality</span>
+        <span class="kw">Fault Detection</span>
+        <span class="kw red">Limitation</span>
+      </div>
+      <div class="card-body">Testing 的作用是<span class="hl-green">发现问题、提升质量、作为文档</span>，但它有一个根本局限：<span class="hl-red">无法保证代码完全正确</span>。</div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Testing 的目的</th><th>说明</th><th>是否正确</th></tr></thead>
+          <tbody>
+            <tr><td>Improve code quality</td><td>通过测试发现并修复缺陷，提升整体质量</td><td style="color:var(--accent);font-weight:600">✓</td></tr>
+            <tr><td>Spot code faults</td><td>识别代码中存在的 bug 和错误逻辑</td><td style="color:var(--accent);font-weight:600">✓</td></tr>
+            <tr><td>Document code</td><td>Test cases 本身可作为系统行为的活文档</td><td style="color:var(--accent);font-weight:600">✓</td></tr>
+            <tr><td>Guarantee fully correct</td><td>输入空间无限大，无法穷举所有情况</td><td style="color:var(--red);font-weight:600">✗ 不可能</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="red-box">
+        <div class="note-label">考点提示</div>
+        <strong>Testing 不能保证代码"完全正确"</strong>——这是最常考的干扰项。即使通过所有测试，也可能存在未被覆盖的边界情况。
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">实践原则</div>
+      <div class="card-title">测试的时机与规模</div>
+      <div class="keywords">
+        <span class="kw green">TDD</span>
+        <span class="kw">Test-first</span>
+        <span class="kw">Test Code Volume</span>
+        <span class="kw blue">UI Testing</span>
+      </div>
+      <div class="card-body">测试可以在开发的<span class="hl">任意阶段</span>编写，并且测试代码量可以超过生产代码量。</div>
+      <ul class="blist">
+        <li><strong>Before</strong> — 写代码前先写测试（TDD / BDD），驱动设计</li>
+        <li><strong>During</strong> — 开发中同步补充测试，保证新功能有覆盖</li>
+        <li><strong>After</strong> — 代码完成后补测试，常见于回归测试和 bug 修复</li>
+        <li>成熟项目中，<strong>test code 量可以超过 source code</strong>，这是正常现象</li>
+        <li>User Interface 也可以被测试，UI 自动化测试在设计稳定后构建</li>
+      </ul>
+      <div class="green-box">
+        <div class="note-label">关于谁来写测试</div>
+        测试不只是 QA 的职责。开发者、领域专家甚至用户都可以参与编写 test cases，多方参与能减少盲区偏差。
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">认知偏差</div>
+      <div class="card-title">Developer Bias in Testing</div>
+      <div class="keywords">
+        <span class="kw amber">Developer Bias</span>
+        <span class="kw">QA</span>
+        <span class="kw">Independent Testing</span>
+      </div>
+      <div class="card-body">开发者测试自己的代码时，往往存在<span class="hl-amber">认知偏差（bias）</span>——倾向于测试"认为正确"的路径，而忽略边界情况。</div>
+      <ul class="blist">
+        <li>开发者即使完全理解实现，也<strong>不能保证发现所有 faults</strong></li>
+        <li>对自己写的代码有先入为主的假设，难以从外部视角测试</li>
+        <li>鼓励更多人参与写测试——独立视角能发现开发者看不到的问题</li>
+        <li>QA 工程师是测试专家，但并非唯一应该写 test cases 的人</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <!-- Tab 2: Test Activities -->
+  <div id="tab-activities" class="tab-panel">
+
+    <div class="card">
+      <div class="card-label">测试流程</div>
+      <div class="card-title">四种 Test Activity 类型</div>
+      <div class="keywords">
+        <span class="kw green">Test Design</span>
+        <span class="kw green">Test Automation</span>
+        <span class="kw green">Test Execution</span>
+        <span class="kw green">Test Evaluation</span>
+        <span class="kw red">Test Implementation ✗</span>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Activity</th><th>核心任务</th><th>所需能力</th></tr></thead>
+          <tbody>
+            <tr><td>Test Design</td><td>设计测试用例，确定测试值与预期结果</td><td>深入的领域与代码知识</td></tr>
+            <tr><td>Test Automation</td><td>将测试值嵌入可执行脚本，实现自动化运行</td><td>编程能力，理解测试框架</td></tr>
+            <tr><td>Test Execution</td><td>实际运行测试，收集结果</td><td>执行环境配置能力</td></tr>
+            <tr><td>Test Evaluation</td><td>分析测试结果，判断通过/失败，评估覆盖率</td><td>结果分析与报告能力</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="note-box">
+        <div class="note-label">考点提示</div>
+        <strong>"Test Implementation" 不是标准 activity 类型</strong>，是最常考的干扰项。记住四类：Design → Automation → Execution → Evaluation。
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">自动化 vs 手工</div>
+      <div class="card-title">Manual Testing vs. Automated Testing</div>
+      <div class="keywords">
+        <span class="kw blue">Automated Testing</span>
+        <span class="kw">Manual Testing</span>
+        <span class="kw amber">Regression Testing</span>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th></th><th>Manual Testing</th><th>Automated Testing</th></tr></thead>
+          <tbody>
+            <tr><td>适用场景</td><td>探索性测试、一次性测试、UI 原型期</td><td>回归测试、高频重复执行的测试</td></tr>
+            <tr><td>Bug 发现</td><td>擅长创意性发现，探索边界</td><td>不一定比手工发现更多 bug</td></tr>
+            <tr><td>维护成本</td><td>低（无需维护脚本）</td><td>高（脚本需随代码更新）</td></tr>
+            <tr><td>UI 测试时机</td><td>设计阶段可手动验证</td><td>界面设计稳定后再自动化</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="red-box">
+        <div class="note-label">常见错误认知</div>
+        <strong>自动化测试并不总是比手工测试发现更多 bug</strong>。对于不需要重复执行的测试，手工完成即可，自动化反而浪费资源。
+      </div>
+      <div class="blue-box">
+        <div class="note-label">回归测试原则</div>
+        当 regression tests 需要<strong>频繁执行</strong>时，优先选择自动化——这是自动化的核心价值所在。
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">文档与理解</div>
+      <div class="card-title">Test Cases 作为活文档</div>
+      <div class="keywords">
+        <span class="kw green">Test Cases</span>
+        <span class="kw">Living Documentation</span>
+        <span class="kw">Requirements Understanding</span>
+      </div>
+      <div class="card-body">编写 test cases 的过程本身，能帮助开发者<span class="hl-green">深化对需求的理解</span>。Test cases 同时也是系统行为的活文档。</div>
+      <ul class="blist">
+        <li>Test cases 不只是代码的附属品，它们<strong>描述系统预期行为</strong></li>
+        <li>写测试时需要明确输入、输出和边界——这本身就是对需求的梳理</li>
+        <li>Test cases 可以作为文档被团队成员阅读和参考</li>
+        <li>测试不一定以代码形式存在（也可以是手工测试计划文档）</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <!-- Tab 3: Black vs White Box -->
+  <div id="tab-blackwhite" class="tab-panel">
+
+    <div class="card">
+      <div class="card-label">测试策略对比</div>
+      <div class="card-title">Black-box vs. White-box Testing</div>
+      <div class="keywords">
+        <span class="kw blue">Black-box</span>
+        <span class="kw green">White-box</span>
+        <span class="kw">Structural Testing</span>
+        <span class="kw">Functional Testing</span>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th></th><th>Black-box Testing</th><th>White-box Testing</th></tr></thead>
+          <tbody>
+            <tr><td>视角</td><td>从外部，不知道内部实现</td><td>从内部，完整了解代码结构</td></tr>
+            <tr><td>别名</td><td>Functional / Specification-based</td><td>Structural / Code-based</td></tr>
+            <tr><td>测试依据</td><td>需求规格、接口行为</td><td>代码逻辑、控制流、数据流</td></tr>
+            <tr><td>擅长发现</td><td>功能不符、需求偏差</td><td>Extra logic、死代码、路径错误</td></tr>
+            <tr><td>局限</td><td>无法穷举所有输入；看不见 extra logic</td><td>维护成本高；实现频繁变动时难维护</td></tr>
+            <tr><td>所需知识</td><td>需求与业务逻辑</td><td>编程与内部实现细节（要求高）</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="note-box">
+        <div class="note-label">考点提示</div>
+        White-box testing <strong>并不简单</strong>，需要深入了解编程和实现细节。Black-box testing 在发现 <strong>extra logic faults</strong> 方面较弱（因为看不到内部多余代码）。
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Black-box 核心局限</div>
+      <div class="card-title">无法穷举所有测试输入</div>
+      <div class="keywords">
+        <span class="kw red">Exhaustive Testing</span>
+        <span class="kw">Input Space</span>
+        <span class="kw amber">Infeasible</span>
+      </div>
+      <div class="card-body">Black-box testing 面临的根本挑战：<span class="hl-red">输入空间几乎无限大</span>，无法对所有可能输入进行穷举测试，因此必须选取代表性样本。</div>
+      <ul class="blist">
+        <li>即使是简单函数，合法输入组合也可能达到数十亿种</li>
+        <li>解决方案：使用 <strong>Equivalence Class Partitioning</strong> 和 <strong>Boundary Value Analysis</strong> 等策略缩减测试集</li>
+        <li>这也是为什么 testing 无法"保证代码完全正确"的底层原因</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="card-label">White-box 核心局限</div>
+      <div class="card-title">维护成本与测试方法的迁移</div>
+      <div class="keywords">
+        <span class="kw amber">Maintenance Cost</span>
+        <span class="kw">Equivalence Class</span>
+        <span class="kw">Boundary Value</span>
+      </div>
+      <div class="card-body">White-box 测试的脚本与内部实现深度绑定，<span class="hl-amber">一旦实现频繁变更，维护脚本的成本极高</span>。</div>
+      <div class="green-box">
+        <div class="note-label">重要补充</div>
+        <strong>Equivalence Class Partitioning</strong> 和 <strong>Boundary Value Analysis</strong> 不只是 Black-box 技法——它们同样可以应用于 White-box testing，属于通用测试设计方法。
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Tab 4: PIE 模型 -->
+  <div id="tab-pie" class="tab-panel">
+
+    <div class="card">
+      <div class="card-label">缺陷分析模型</div>
+      <div class="card-title">PIE Model — 故障传播链</div>
+      <div class="keywords">
+        <span class="kw amber">Execution</span>
+        <span class="kw amber">Infection</span>
+        <span class="kw amber">Propagation</span>
+        <span class="kw">Failure Observation</span>
+      </div>
+      <div class="card-body">PIE 模型描述了一个 <span class="hl-amber">failure</span> 被观察到所需的三个必要条件，缺少任何一个都不会产生可见的 failure。</div>
+      <div class="summary-grid">
+        <div class="summary-cell">
+          <div class="sc-label">P — Execution</div>
+          <div class="sc-val">包含 fault 的代码位置必须被执行到</div>
+        </div>
+        <div class="summary-cell">
+          <div class="sc-label">I — Infection</div>
+          <div class="sc-val">执行后程序状态必须变为不正确（infected）</div>
+        </div>
+        <div class="summary-cell">
+          <div class="sc-label">E — Propagation</div>
+          <div class="sc-val">被污染的状态必须传播到可观察的输出</div>
+        </div>
+      </div>
+      <div class="red-box">
+        <div class="note-label">考点提示</div>
+        三个条件都是 <strong>必要条件</strong>。"infected state must NOT propagate" 是错误表述——Propagation <strong>必须发生</strong>，failure 才能被观察到。
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">概念辨析</div>
+      <div class="card-title">Error vs. Fault vs. Failure</div>
+      <div class="keywords">
+        <span class="kw red">Error</span>
+        <span class="kw amber">Fault</span>
+        <span class="kw blue">Failure</span>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>概念</th><th>定义</th><th>对应层面</th></tr></thead>
+          <tbody>
+            <tr><td>Error</td><td>人（开发者）犯的错误，导致代码写错</td><td>人的行为层面</td></tr>
+            <tr><td>Fault</td><td>代码中实际存在的缺陷（bug）</td><td>代码/静态层面</td></tr>
+            <tr><td>Failure</td><td>程序运行时表现出的错误行为</td><td>运行时/可观察层面</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="blue-box">
+        <div class="note-label">例子解析</div>
+        开发者本想调用 <code>Math.log(5)</code> 求自然对数，却写成了求 5³ 返回 125——这个<strong>人为的书写错误是 Error</strong>；代码中错误的逻辑是 Fault；程序运行时返回 125 而非 ln(5) 是 Failure。
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Tab 5: Coverage & 技法 -->
+  <div id="tab-coverage" class="tab-panel">
+
+    <div class="card">
+      <div class="card-label">测试度量</div>
+      <div class="card-title">Code Coverage Metrics</div>
+      <div class="keywords">
+        <span class="kw green">Statement Coverage</span>
+        <span class="kw green">Branch Coverage</span>
+        <span class="kw green">Method Coverage</span>
+        <span class="kw red">Parameter Coverage ✗</span>
+      </div>
+      <div class="card-body">Coverage metrics 衡量测试对代码结构的覆盖程度，是评估测试充分性的核心指标。</div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Coverage 类型</th><th>度量对象</th><th>是否标准</th></tr></thead>
+          <tbody>
+            <tr><td>Statement Coverage</td><td>每条可执行语句是否被执行</td><td style="color:var(--accent);font-weight:600">✓ 标准</td></tr>
+            <tr><td>Branch Coverage</td><td>每个条件分支（true/false）是否都被走到</td><td style="color:var(--accent);font-weight:600">✓ 标准</td></tr>
+            <tr><td>Method Coverage</td><td>每个方法/函数是否被调用过</td><td style="color:var(--accent);font-weight:600">✓ 标准</td></tr>
+            <tr><td>Condition Coverage</td><td>复合条件中每个子条件的真/假情况</td><td style="color:var(--accent);font-weight:600">✓ 标准</td></tr>
+            <tr><td>Parameter Coverage</td><td>——</td><td style="color:var(--red);font-weight:600">✗ 不是标准指标</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="note-box">
+        <div class="note-label">考点提示</div>
+        <strong>"Parameter coverage" 不是标准覆盖率指标</strong>。标准指标围绕代码执行结构（语句、分支、方法、条件）定义，参数不构成独立的覆盖维度。
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Black-box 技法</div>
+      <div class="card-title">Equivalence Class Partitioning vs. Boundary Value Analysis</div>
+      <div class="keywords">
+        <span class="kw blue">Equivalence Class Partitioning</span>
+        <span class="kw green">Boundary Value Analysis</span>
+        <span class="kw">Decision Table Testing</span>
+        <span class="kw">Use Case Testing</span>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>技法</th><th>核心思想</th><th>记忆关键词</th></tr></thead>
+          <tbody>
+            <tr><td>Equivalence Class Partitioning</td><td>将输入条件分组，同组内的输入行为相同，每组只需测一个代表值</td><td>分组、代表值</td></tr>
+            <tr><td>Boundary Value Analysis</td><td>聚焦各分组边界值（最小值、最大值、边界±1）进行测试</td><td>边界、±1</td></tr>
+            <tr><td>Decision Table Testing</td><td>列举条件组合与对应动作，覆盖多条件逻辑</td><td>条件矩阵</td></tr>
+            <tr><td>Use Case Testing</td><td>基于用户使用场景设计测试，从用户角度验证功能</td><td>用户场景</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="blue-box">
+        <div class="note-label">核心区别</div>
+        <strong>ECP</strong> 关注"把输入<em>分成几组</em>"；<strong>BVA</strong> 关注"在分组的<em>边界处</em>测试"。两者常配合使用——先用 ECP 划定等价类，再用 BVA 在边界处加密测试。
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+</script>
