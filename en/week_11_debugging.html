@@ -658,18 +658,7 @@ code{font-family:'Source Code Pro',monospace;font-size:0.85em;background:var(--t
 <div class="qz-header">
 <h2>Chapter 11 — quiz</h2>
 </div>
-<nav aria-label="Quiz sections" class="qz-tab-nav">
-<button class="qz-tab-btn active" onclick="switchQuizTab('11-1',this)" type="button">11.1</button>
-<button class="qz-tab-btn" onclick="switchQuizTab('11-2',this)" type="button">11.2</button>
-<button class="qz-tab-btn" onclick="switchQuizTab('11-3',this)" type="button">11.3</button>
-<button class="qz-tab-btn" onclick="switchQuizTab('11-4',this)" type="button">11.4</button>
-<button class="qz-tab-btn" onclick="switchQuizTab('11-5',this)" type="button">11.5</button>
-<button class="qz-tab-btn" onclick="switchQuizTab('11-6',this)" type="button">11.6</button>
-<button class="qz-tab-btn" onclick="switchQuizTab('11-7',this)" type="button">11.7</button>
-<button class="qz-tab-btn" onclick="switchQuizTab('11-8',this)" type="button">11.8</button>
-<button class="qz-tab-btn" onclick="switchQuizTab('11-sum',this)" type="button">Summary</button>
-</nav>
-<div class="qz-tab-panel active" id="qz-panel-11-1">
+<div class="qz-tab-panel" id="qz-panel-11-1">
 <div class="qz-panel-toolbar">
 <div class="qz-actions">
 <button class="qz-reset" onclick="resetQuizCh11_11_1()" type="button">Reset</button>
@@ -735,7 +724,7 @@ code{font-family:'Source Code Pro',monospace;font-size:0.85em;background:var(--t
 </div>
 <div id="questions-ch11-11-8"></div>
 </div>
-<div class="qz-tab-panel" id="qz-panel-11-sum">
+<div class="qz-tab-panel active" id="qz-panel-11-sum">
 <div class="qz-panel-toolbar">
 <div class="qz-actions">
 <button class="qz-reset" onclick="resetQuizCh11_11_sum()" type="button">Reset</button>
@@ -749,14 +738,31 @@ code{font-family:'Source Code Pro',monospace;font-size:0.85em;background:var(--t
 </div>
 </div>
 <script>
-function switchQuizTab(id, btn) {
-  var pane = btn.closest('.quiz-pane');
+var NOTE_TO_QUIZ = {
+  '11-1-overview': '11-1',
+  '11-2-problem-tracker': '11-2',
+  '11-3-tracking': '11-3',
+  '11-4-simplification': '11-4',
+  '11-5-fault-localization': '11-5',
+  '11-6-assertions': '11-6',
+  '11-7-assertions-tool': '11-7',
+  '11-8-design-by-contract': '11-8',
+  'summary': '11-sum'
+};
+function switchTab(id, btn) {
+  if (!btn) return;
+  var pane = btn.closest('.notes-pane');
   if (!pane) return;
-  pane.querySelectorAll('.qz-tab-panel').forEach(function (p) { p.classList.remove('active'); });
-  pane.querySelectorAll('.qz-tab-nav .qz-tab-btn').forEach(function (b) { b.classList.remove('active'); });
-  var panel = document.getElementById('qz-panel-' + id);
+  pane.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); });
+  pane.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+  var panel = document.getElementById('tab-' + id);
   if (panel) panel.classList.add('active');
   btn.classList.add('active');
+  var qzId = NOTE_TO_QUIZ[id];
+  document.querySelectorAll('.qz-tab-panel').forEach(function(p) { p.classList.remove('active'); });
+  var qzPanel = qzId ? document.getElementById('qz-panel-' + qzId) : null;
+  if (!qzPanel) qzPanel = document.getElementById('qz-panel-11-sum');
+  if (qzPanel) qzPanel.classList.add('active');
 }
 
 var CH11_RAW_QUESTIONS = [
