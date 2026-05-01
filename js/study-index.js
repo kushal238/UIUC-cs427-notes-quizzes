@@ -57,6 +57,31 @@
     return null;
   }
 
+  function setNavOpen(open) {
+    var toggle = document.getElementById('study-nav-toggle');
+    var backdrop = document.getElementById('study-nav-backdrop');
+    document.body.classList.toggle('nav-open', open);
+    if (toggle) toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    if (backdrop) backdrop.hidden = !open;
+  }
+
+  function initNavToggle() {
+    var toggle = document.getElementById('study-nav-toggle');
+    var backdrop = document.getElementById('study-nav-backdrop');
+    var navList = document.getElementById('study-nav-list');
+    if (!toggle) return;
+    toggle.addEventListener('click', function () {
+      setNavOpen(!document.body.classList.contains('nav-open'));
+    });
+    if (backdrop) backdrop.addEventListener('click', function () { setNavOpen(false); });
+    if (navList) navList.addEventListener('click', function (e) {
+      if (e.target.closest('a')) setNavOpen(false);
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && document.body.classList.contains('nav-open')) setNavOpen(false);
+    });
+  }
+
   function init() {
     var initial = pickInitialWeek();
     if (typeof window.renderStudyNavList === 'function') {
@@ -73,6 +98,7 @@
       if (w && w.file) loadWeek(w);
     });
 
+    initNavToggle();
   }
 
   if (document.readyState === 'loading') {
