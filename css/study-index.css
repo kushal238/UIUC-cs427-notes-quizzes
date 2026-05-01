@@ -8,6 +8,7 @@ body{font-family:'Source Sans 3',sans-serif;background:var(--bg);color:var(--tex
 
 .study-nav-toggle{display:none;}
 .study-nav-backdrop{display:none;}
+.scroll-to-top{display:none;}
 
 @media (max-width:960px){
   html,body{height:auto;overflow:visible;}
@@ -59,4 +60,18 @@ body{font-family:'Source Sans 3',sans-serif;background:var(--bg);color:var(--tex
   .study-nav-list .study-nav-soon{padding:11px 12px;font-size:0.9rem;}
   .study-nav-group-label{padding:11px 12px 4px!important;font-size:0.9rem;}
   .study-nav-sub{padding:4px 12px 11px 22px!important;font-size:0.82rem;}
+
+  .scroll-to-top{
+    display:flex;align-items:center;justify-content:center;
+    position:fixed;right:14px;bottom:max(14px,env(safe-area-inset-bottom));
+    width:44px;height:44px;border-radius:50%;
+    background:var(--text);color:var(--bg);border:none;
+    box-shadow:0 4px 14px rgba(0,0,0,.18);
+    cursor:pointer;-webkit-tap-highlight-color:transparent;
+    opacity:0;transform:translateY(8px);pointer-events:none;
+    transition:opacity .2s ease,transform .2s ease;
+    z-index:24;
+  }
+  .scroll-to-top[hidden]{display:none;}
+  .scroll-to-top.visible{opacity:1;transform:translateY(0);pointer-events:auto;}
 }

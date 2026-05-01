@@ -132,6 +132,7 @@
     });
 
     initNavToggle();
+    initScrollToTop();
 
     var frame = $('#study-frame');
     if (frame) {
@@ -139,6 +140,27 @@
     }
     mobileMQ.addEventListener ? mobileMQ.addEventListener('change', syncFrameHeight) : mobileMQ.addListener(syncFrameHeight);
     window.addEventListener('resize', syncFrameHeight);
+  }
+
+  function initScrollToTop() {
+    var btn = document.getElementById('scroll-to-top');
+    if (!btn) return;
+    btn.hidden = false;
+    var threshold = 400;
+    var ticking = false;
+    function update() {
+      ticking = false;
+      var y = window.scrollY || window.pageYOffset || 0;
+      btn.classList.toggle('visible', y > threshold);
+    }
+    window.addEventListener('scroll', function () {
+      if (!ticking) { window.requestAnimationFrame(update); ticking = true; }
+    }, { passive: true });
+    btn.addEventListener('click', function () {
+      try { window.scrollTo({ top: 0, behavior: 'smooth' }); }
+      catch (e) { window.scrollTo(0, 0); }
+    });
+    update();
   }
 
   if (document.readyState === 'loading') {
