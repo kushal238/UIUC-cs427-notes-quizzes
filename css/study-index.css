@@ -10,10 +10,14 @@ body{font-family:'Source Sans 3',sans-serif;background:var(--bg);color:var(--tex
 .study-nav-backdrop{display:none;}
 
 @media (max-width:960px){
-  html,body{height:100%;overflow:hidden;}
-  .index-app{display:flex;flex-direction:column;min-height:100dvh;height:100dvh;}
-  .index-main{min-height:0;flex:1;}
-  #study-frame{flex:1;width:100%;height:100%;min-height:0;}
+  html,body{height:auto;overflow:visible;}
+  body{min-height:100dvh;}
+  .index-app{display:flex;flex-direction:column;min-height:100dvh;height:auto;}
+  .index-main{min-height:0;flex:1 0 auto;}
+  /* iframe height is set dynamically by JS to its content scrollHeight so
+     the parent window is the scroll container — needed for iOS status-bar
+     tap-to-top to work. */
+  #study-frame{flex:0 0 auto;width:100%;height:auto;min-height:100dvh;display:block;}
 
   .study-nav-toggle{
     display:flex;flex-direction:column;justify-content:center;gap:5px;

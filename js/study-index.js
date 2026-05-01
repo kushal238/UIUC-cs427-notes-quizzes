@@ -27,6 +27,38 @@
     });
   }
 
+  var mobileMQ = window.matchMedia('(max-width: 960px)');
+  var resizeObserver = null;
+
+  function isMobile() { return mobileMQ.matches; }
+
+  function syncFrameHeight() {
+    var frame = $('#study-frame');
+    if (!frame) return;
+    if (!isMobile()) { frame.style.height = ''; return; }
+    var doc;
+    try { doc = frame.contentDocument && frame.contentDocument.documentElement; } catch (e) { return; }
+    if (!doc) return;
+    var h = doc.scrollHeight;
+    if (h && Math.abs(parseInt(frame.style.height, 10) - h) > 1) {
+      frame.style.height = h + 'px';
+    }
+  }
+
+  function attachFrameObserver() {
+    var frame = $('#study-frame');
+    if (!frame) return;
+    if (resizeObserver) { try { resizeObserver.disconnect(); } catch (e) {} resizeObserver = null; }
+    var doc;
+    try { doc = frame.contentDocument && frame.contentDocument.documentElement; } catch (e) { return; }
+    if (!doc) return;
+    syncFrameHeight();
+    if (typeof ResizeObserver === 'function') {
+      resizeObserver = new ResizeObserver(syncFrameHeight);
+      try { resizeObserver.observe(doc); } catch (e) {}
+    }
+  }
+
   function loadWeek(week) {
     if (!week || !week.file) return;
     var frame = $('#study-frame');
@@ -38,6 +70,7 @@
       history.replaceState(null, '', '#' + week.id);
     } catch (e) {}
     document.title = 'CS 427 Study · ' + window.formatWeekLabel(week);
+    try { window.scrollTo(0, 0); } catch (e) {}
   }
 
   function hashToWeekId() {
@@ -99,6 +132,13 @@
     });
 
     initNavToggle();
+
+    var frame = $('#study-frame');
+    if (frame) {
+      frame.addEventListener('load', attachFrameObserver);
+    }
+    mobileMQ.addEventListener ? mobileMQ.addEventListener('change', syncFrameHeight) : mobileMQ.addListener(syncFrameHeight);
+    window.addEventListener('resize', syncFrameHeight);
   }
 
   if (document.readyState === 'loading') {
